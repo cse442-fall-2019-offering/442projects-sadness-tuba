@@ -6,4 +6,4 @@ Project Description: The completed version of our project will be a 2-dimensiona
 
 MVP: The most minimal feature our project should have is the main menu with the option to play the game. The game should include at least one stage with the player’s ship able to move around the screen. The game should be able to send obstacles for the player to avoid and shoot at. The player should also have the ability to shoot. If the player’s ship is destroyed or the level is beaten, it should bring the player back to the main menu. Additionally, the player should be able to pause and quit the game.
 
-Project Platform: Windows Desktop
+Project Platform: Windows Application 
