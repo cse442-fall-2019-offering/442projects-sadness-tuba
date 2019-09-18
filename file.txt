@@ -5,3 +5,5 @@ https://github.com/cse442-fall-2019-offering/442projects-sadness-tuba.git
 Testing
 Testing from Dani
 Testing from Benson
+
+Testing if .vs is getting ignored
