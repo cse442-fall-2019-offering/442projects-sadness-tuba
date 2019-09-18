@@ -8,3 +8,5 @@ Testing from Benson
 
 Testing if .vs is getting ignored
 Testing
+
+Testing 3 for ignore git from Benson
