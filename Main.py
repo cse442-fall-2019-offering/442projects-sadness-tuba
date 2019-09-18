@@ -3,38 +3,63 @@ import pygame  # importation for pygame
 pygame.init()  # need to initialize pygame before using
 
 clock = pygame.time.Clock()
+# Pygame window width
 winWidth = 700
 
+# Pygame window height
 widHeight = 750
 
+# Height of each menu option image
 optionHeight = 44
 
+# Used to rotate through the star picture frames
 currentStarFrame = 0
 
 currentStarFrame1 = 1
 
 currentStarFrame2 = 2
 
-win = pygame.display.set_mode((winWidth, widHeight))  # displays screen
+# Spacing between each Menu option image
+heightSpacing = 75
+
+# count for key pressing logic
+count = 0
+# displays screen with specified window width and window height
+win = pygame.display.set_mode((winWidth, widHeight))
+
 
 #  option array (button name, image, highlighted image, image width, height spacing between each image)
 #  If you want to add one more option, add 75 to height spacing between each image
 
+# tuple for start menu option
 startOption = ("start", pygame.image.load('Options/Start_Game.png'), pygame.image.load('Options/Start_Game_Highlighted.png'), 346, 350)  # 346x44
 
+# tuple for shop menu option
 shopOption = ("shop", pygame.image.load('Options/Shop.png'), pygame.image.load('Options/Shop_Highlighted.png'), 146, 425)  # 146x44
 
+# tuple for settings menu option
 settingsOption = ("settings", pygame.image.load('Options/Settings.png'), pygame.image.load('Options/Settings_Highlighted.png'), 274, 500)  # 274x44
 
+# tuple for quit menu option
 quitOption = ("quit", pygame.image.load('Options/Quit.png'), pygame.image.load('Options/Quit_Highlighted.png'), 126, 575)  # 126x44
 
+# Selected option is the  option the user has selected. This will be used to determine when the image becomes
+# highlighted
 selectedOption = startOption
 
-optionArray = (startOption, shopOption, settingsOption, quitOption)
+# a tuple that stores all the men option tuples
+optionTuple = (startOption, shopOption, settingsOption, quitOption)
 
+# Use for determining which option gets highlighted when uses keyboard pressed
+commandOptionArray = []
+for z in optionTuple:
+    commandOptionArray.append(z[0])
+
+# Initialize the background image
 bg = pygame.image.load('Menu/Main_Menu.png')
-#  bg = pygame.transform.scale(bg, (700, 800))  # can resize image through pygame if need be
-pygame.display.set_caption('BEYOND INFINITY')  # used to display name of window at the top
+# used to display name of window at the top
+pygame.display.set_caption('BEYOND INFINITY')
+
 # Frames for stars
 Star1 = [pygame.image.load('Background/Animated_Star1/Star0.png'), pygame.image.load('Background/Animated_Star1/Star1.png'),
                    pygame.image.load('Background/Animated_Star1/Star2.png')]
@@ -45,7 +70,32 @@ Star2 = [pygame.image.load('Background/Animated_Star2/Star0.png'), pygame.image.
 Star3 = [pygame.image.load('Background/Animated_Star3/Star0.png'), pygame.image.load('Background/Animated_Star3/Star1.png'),
                    pygame.image.load('Background/Animated_Star3/Star2.png')]
 
+# Frames for playership
+BasicShipFrame = [pygame.image.load('PlayerShips/BasicShipFlying0.png'),pygame.image.load('PlayerShips/BasicShipFlying1.png'),
+               pygame.image.load('PlayerShips/BasicShipFlying2.png'), pygame.image.load('PlayerShips/BasicShipFlying3.png'),
+               pygame.image.load('PlayerShips/BasicShipFlying4.png'), pygame.image.load('PlayerShips/BasicShipFlying5.png')]
 # Definition to draw game window
+
+# Class for defining the players ships so we can control its x,y coordinates
+
+
+class PlayerShip(object):
+    # Need to initialize class by defining its properties
+    def __init__(self, xcor, ycor, width, height):
+        self.xcor = xcor
+        self.ycor = ycor
+        self.width = width
+        self.height = height
+        self.ShipFrame = 0
+    # Used to draw the player ship onto the pygame window
+
+    def draw(self, window):
+        self.ShipFrame += 1
+        if self.ShipFrame == 6:
+            self.ShipFrame = 1
+        win.blit(BasicShipFrame[self.ShipFrame - 1], (self.xcor, self.ycor))
+
+# Check if any options are clicked
 
 
 def option_click_event(option, xmouse, ymouse):
@@ -56,39 +106,30 @@ def option_click_event(option, xmouse, ymouse):
             running = False
         print(option[0])
 
+# This definition draws the options onto the pygame window
+
 
 def create_options(option):
     global selectedOption
+    global count
     mouse = pygame.mouse.get_pos()
     width_spacing = ((winWidth - option[3]) / 2)
-
     if selectedOption[0] == option[0]:
         win.blit(option[2], (width_spacing, option[4]))
     elif width_spacing + option[3] > mouse[0] > width_spacing and option[4] + optionHeight > mouse[1] > option[4]:
         win.blit(option[2], (width_spacing, option[4]))
         selectedOption = option
+        player.ycor = option[4]
+        optionArrayIndex = 0
+        for u in optionTuple:
+            if selectedOption[0] == u[0]:
+                count = optionArrayIndex
+            else:
+                optionArrayIndex += 1
     else:
         win.blit(option[1], (width_spacing, option[4]))
 
-
-def create_optionss():
-    mouse = pygame.mouse.get_pos()
-    if 177+346 > mouse[0] > 177 and 350+44 > mouse[1] > 350:
-        win.blit(startOption[2], (177, 350))  # 346x44
-    else:
-        win.blit(startOption, (177, 350))  # 346x44
-    if 277+146 > mouse[0] > 277 and 425+44 > mouse[1] > 425:
-        win.blit(shopOption[2], (277, 425))  # 146x44
-    else:
-        win.blit(shopOption, (277, 425))  # 146x44
-    if 213+274 > mouse[0] > 213 and 500+44 > mouse[1] > 500:
-        win.blit(settingsOption[2], (213, 500))  # 274x44
-    else:
-        win.blit(settingsOption, (213, 500))  # 274x44
-    if 287+126 > mouse[0] > 287 and 575+44 > mouse[1] > 575:
-        win.blit(quitOption[2], (287, 575))  # 126x44
-    else:
-        win.blit(quitOption, (287, 575))  # 126x44
+# Cycles through the frames for the star images
 
 
 def make_background():
@@ -115,33 +156,77 @@ def make_background():
     currentStarFrame1 += 1
     currentStarFrame2 += 1
 
+# This definition handles if a keyboard press happens. Currently It detects if down button is pressed, up button and
+# enter button.
+
+
+def handlekeypress():
+    global selectedOption
+    global count
+    global running
+    if keys[pygame.K_DOWN]:
+        count += 1
+        for p in commandOptionArray:
+            if player.ycor > 501:
+                count = 0
+                player.ycor = 276
+            if selectedOption[0] == p:
+                selectedOption = optionTuple[count]
+                player.ycor += heightSpacing
+                break
+    if keys[pygame.K_UP]:
+        count -= 1
+        for p in commandOptionArray:
+            if player.ycor < 400:
+                count = 3
+                player.ycor = 651
+            if selectedOption[0] == p:
+                selectedOption = optionTuple[count]
+                player.ycor -= heightSpacing
+                break
+
+    if keys[pygame.K_KP_ENTER] or keys[pygame.K_RETURN]:
+        if selectedOption[0] == "quit":
+            running = False
+        else:
+            print(selectedOption[0])
+
+# This defnition draws the background, player and also updates pygame screen show everything displays onto the window
+
 
 def drawgamewindow():
     # Displays Menu
     win.blit(bg, (0, 0))
     make_background()
-    for j in optionArray:
+    player.draw(win)
+    for j in optionTuple:
         create_options(j)
-
-    # keys = pygame.key.get_pressed()
     pygame.display.update()
 
+# Set Running to true so the game loops forever
 
-running = True  # Set Running to true so the game loops forever
-# Main while loop to run game
 
+running = True
+# creates the player object
+player = PlayerShip(100, 351, 64, 64)
+# The main loop where all the definitions are called and where everything is linked together
 while running:
-    clock.tick(12)
+    clock.tick(12)                  # Controls frame rate
     for event in pygame.event.get():
+        keys = pygame.key.get_pressed()  # used to check what key on keyboard is pressed
         if event.type == pygame.QUIT:  # pygame.QUIT is the even in which the x button on window is pressed
             running = False            # set running to false so we break out of loop
 
-        if event.type == pygame.MOUSEBUTTONUP:
+        if event.type == pygame.MOUSEBUTTONUP:  # Checks if mouse is clicked
             mouse1 = pygame.mouse.get_pos()
-            for x in optionArray:
+            for x in optionTuple:
                 option_click_event(x, mouse1[0], mouse1[1])
-
             print(mouse1)
+        # Checks for key presses
+        if event.type == pygame.KEYDOWN:
+            handlekeypress()
+        # checking for when the keys are pressed. Using event type so that keys wont register multiple times
+
     drawgamewindow()
 pygame.quit()                           # quit pygame once using quits game
 
