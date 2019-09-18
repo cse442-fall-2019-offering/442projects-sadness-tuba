@@ -24,6 +24,7 @@ heightSpacing = 75
 
 # count for key pressing logic
 count = 0
+
 # displays screen with specified window width and window height
 win = pygame.display.set_mode((winWidth, widHeight))
 
@@ -120,6 +121,7 @@ def create_options(option):
         win.blit(option[2], (width_spacing, option[4]))
         selectedOption = option
         player.ycor = option[4]
+        player.xcor = width_spacing - 77
         optionArrayIndex = 0
         for u in optionTuple:
             if selectedOption[0] == u[0]:
@@ -168,6 +170,7 @@ def handlekeypress():
         count += 1
         for p in commandOptionArray:
             if player.ycor > 501:
+                print(player.ycor)
                 count = 0
                 player.ycor = 276
             if selectedOption[0] == p:
@@ -178,12 +181,16 @@ def handlekeypress():
         count -= 1
         for p in commandOptionArray:
             if player.ycor < 400:
-                count = 3
+                print(player.ycor)
+                count = len(optionTuple) - 1
                 player.ycor = 651
             if selectedOption[0] == p:
                 selectedOption = optionTuple[count]
                 player.ycor -= heightSpacing
                 break
+    width_spacing = ((winWidth - selectedOption[3]) / 2)
+    player.xcor = width_spacing - 77
+
 
     if keys[pygame.K_KP_ENTER] or keys[pygame.K_RETURN]:
         if selectedOption[0] == "quit":
