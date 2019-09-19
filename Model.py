@@ -28,19 +28,57 @@ selectedOption = startOption
 # a tuple that stores all the men option tuples
 optionTuple = (startOption, shopOption, settingsOption, quitOption)
 
-class PlayerShip(object):
+
+class PlayerShip(pygame.sprite.Sprite):
     # Need to initialize class by defining its properties
-    def __init__(self, xcor, ycor, width, height, shipFrames):
+    def __init__(self, xcor, ycor, ship_frames, width, height, animation_time, current_frame):
+        super(PlayerShip, self).__init__()
         self.xcor = xcor
         self.ycor = ycor
         self.width = width
         self.height = height
-        self.shipFrames = shipFrames
-        self.ShipFrame = 0
-    # Used to draw the player ship onto the pygame window
+        self.ship_frames = ship_frames
+        self.animation_time = animation_time
+        self.index = current_frame
+        self.ship_frame = ship_frames[self.index]
+        self.current_time = 0
 
-    def draw(self, window):
-        self.ShipFrame += 1
-        if self.ShipFrame == len(self.shipFrames) - 1:
-            self.ShipFrame = 1
-        window.blit(self.shipFrames[self.ShipFrame - 1], (self.xcor, self.ycor))
+    # Updates the image of Sprite based on animation_time.
+    def update_time_dependent(self, dt, window):
+        self.current_time += dt
+        if self.current_time >= self.animation_time:
+            self.current_time = 0
+            self.index = (self.index + 1) % len(self.ship_frames)
+            self.ship_frame = self.ship_frames[self.index]
+        window.blit(self.ship_frame, (self.xcor, self.ycor))
+
+    # This is the method that's being called when 'all_sprites.update(dt)' is called
+    def update(self, dt, window):
+        self.update_time_dependent(dt, window)
+
+
+class AnimatedBackgroundSprite(pygame.sprite.Sprite):
+    def __init__(self, xcor, ycor, images, size, animation_time, current_frame):
+        super(AnimatedBackgroundSprite, self).__init__()
+        self.xcor = xcor
+        self.ycor = ycor
+        position = (xcor, ycor)
+        self.size = size
+        self.rect = pygame.Rect(position, (size, size))
+        self.images = images
+        self.index = current_frame
+        self.image = images[self.index]  # 'image' is the current image of the animation.
+        self.animation_time = animation_time
+        self.current_time = 0
+
+    # Updates the image of Sprite based on animation_time.
+    def update_time_dependent(self, dt):
+        self.current_time += dt
+        if self.current_time >= self.animation_time:
+            self.current_time = 0
+            self.index = (self.index + 1) % len(self.images)
+            self.image = self.images[self.index]
+
+    # This is the method that's being called when 'all_sprites.update(dt)' is called
+    def update(self, dt):
+        self.update_time_dependent(dt)

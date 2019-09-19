@@ -1,8 +1,10 @@
 import pygame  # importation for pygame
 
+import os
+
 import Model
 
-from Model import PlayerShip, optionTuple
+from Model import optionTuple, AnimatedBackgroundSprite, PlayerShip
 
 # Pygame window width
 winWidth = 700
@@ -13,16 +15,18 @@ widHeight = 750
 # Height of each menu option image
 optionHeight = 44
 
-# Used to rotate through the star picture frames
-currentStarFrame = 0
-
-currentStarFrame1 = 1
-
-currentStarFrame2 = 2
-
 # Spacing between each Menu option image
 heightSpacing = 75
 
+smallSize = 32
+
+mediumSize = 64
+
+animationTime = .08
+
+FPS = 60
+
+clock = pygame.time.Clock()
 
 # displays screen with specified window width and window height
 win = pygame.display.set_mode((winWidth, widHeight))
@@ -32,49 +36,35 @@ bg = pygame.image.load('../Menu/Main_Menu.png')
 # used to display name of window at the top
 pygame.display.set_caption('BEYOND INFINITY')
 
-# Frames for stars
-Star1 = [pygame.image.load('../Background/Animated_Star1/Star0.png'), pygame.image.load('../Background/Animated_Star1/Star1.png'),
-                   pygame.image.load('../Background/Animated_Star1/Star2.png')]
 
-Star2 = [pygame.image.load('../Background/Animated_Star2/Star0.png'), pygame.image.load('../Background/Animated_Star2/Star1.png'),
-                   pygame.image.load('../Background/Animated_Star2/Star2.png')]
+# Loads all images in directory. The directory must only contain images.
 
-Star3 = [pygame.image.load('../Background/Animated_Star3/Star0.png'), pygame.image.load('../Background/Animated_Star3/Star1.png'),
-                   pygame.image.load('../Background/Animated_Star3/Star2.png')]
+def load_images(path):
+    images = []
+    for file_name in os.listdir(path):
+        image = pygame.image.load(path + os.sep + file_name).convert()
+        images.append(image)
+    return images
+
 
 # Frames for playership
-BasicShipFrame = [pygame.image.load('../PlayerShips/BasicShipFlying0.png'),pygame.image.load('../PlayerShips/BasicShipFlying1.png'),
-               pygame.image.load('../PlayerShips/BasicShipFlying2.png'), pygame.image.load('../PlayerShips/BasicShipFlying3.png'),
-               pygame.image.load('../PlayerShips/BasicShipFlying4.png'), pygame.image.load('../PlayerShips/BasicShipFlying5.png')]
+BasicShipFrames = load_images('../PlayerShips')
+# Frames for stars
+Star1 = load_images('../Background/Animated_Star1')
 
-# Cycles through the frames for the star images
+Star2 = load_images('../Background/Animated_Star2')
 
+Star3 = load_images('../Background/Animated_Star3')
 # creates the player object
-player = PlayerShip(100, 351, 64, 64, BasicShipFrame)
+player = PlayerShip(100, 350, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
 
-def make_background():
-    global currentStarFrame, currentStarFrame1, currentStarFrame2
-    if currentStarFrame == 3:
-        currentStarFrame = 0
-    if currentStarFrame1 == 3:
-        currentStarFrame1 = 0
-    if currentStarFrame2 == 3:
-        currentStarFrame2 = 0
-    win.blit(Star1[currentStarFrame], (75, 400))
-    win.blit(Star1[currentStarFrame1], (625, 630))
-    win.blit(Star1[currentStarFrame2], (355, 655))
-    win.blit(Star1[currentStarFrame2], (84, 623))
-    win.blit(Star2[currentStarFrame], (606, 340))
-    win.blit(Star2[currentStarFrame1], (428, 690))
-    win.blit(Star2[currentStarFrame2], (250, 300))
-    win.blit(Star2[currentStarFrame2], (163, 534))
-    win.blit(Star3[currentStarFrame], (552, 458))
-    win.blit(Star3[currentStarFrame], (512, 594))
-    win.blit(Star3[currentStarFrame1], (252, 700))
-    win.blit(Star3[currentStarFrame2], (482, 310))
-    currentStarFrame += 1
-    currentStarFrame1 += 1
-    currentStarFrame2 += 1
+background = [AnimatedBackgroundSprite(75, 400, Star1, smallSize, animationTime, 0), AnimatedBackgroundSprite(625, 630, Star1, smallSize, animationTime, 1),
+              AnimatedBackgroundSprite(355, 655, Star1, smallSize, animationTime, 2), AnimatedBackgroundSprite(84, 623, Star1, smallSize, animationTime, 2),
+              AnimatedBackgroundSprite(606, 340, Star2, smallSize, animationTime, 0), AnimatedBackgroundSprite(428, 690, Star2, smallSize, animationTime, 1),
+              AnimatedBackgroundSprite(250, 300, Star2, smallSize, animationTime, 2), AnimatedBackgroundSprite(163, 534, Star2, smallSize, animationTime, 2),
+              AnimatedBackgroundSprite(552, 458, Star3, smallSize, animationTime, 0), AnimatedBackgroundSprite(512, 594, Star3, smallSize, animationTime, 0),
+              AnimatedBackgroundSprite(252, 700, Star3, smallSize, animationTime, 1), AnimatedBackgroundSprite(482, 310, Star3, smallSize, animationTime, 2)]
+
 
 # This definition draws the options onto the pygame window
 
@@ -83,7 +73,8 @@ def create_options(option, mouse):
     width_spacing = ((winWidth - option.imgWidth) / 2)
     if Model.selectedOption.name == option.name:
         win.blit(option.highlighted, (width_spacing, option.yAxisImageSpacing))
-    elif width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxisImageSpacing + optionHeight > mouse[1] > option.yAxisImageSpacing:
+    elif width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxisImageSpacing + optionHeight > mouse[
+        1] > option.yAxisImageSpacing:
         win.blit(option.highlighted, (width_spacing, option.yAxisImageSpacing))
         Model.selectedOption = option
         player.ycor = option.yAxisImageSpacing
@@ -91,14 +82,16 @@ def create_options(option, mouse):
     else:
         win.blit(option.unhighlighted, (width_spacing, option.yAxisImageSpacing))
 
+
 # This defnition draws the background, player and also updates pygame screen show everything displays onto the window
 
 
-def drawgamewindow(mouse):
+def drawgamewindow(mouse, dt, sprite_group, playerShip):
     # Displays Menu
     win.blit(bg, (0, 0))
-    make_background()
-    player.draw(win)
+    sprite_group.update(dt)
+    sprite_group.draw(win)
+    playerShip.update(dt, win)
     for j in optionTuple:
         create_options(j, mouse)
     pygame.display.update()

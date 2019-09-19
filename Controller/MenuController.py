@@ -4,7 +4,7 @@ import Model
 
 from Model import optionTuple
 
-from View.MainMenuView import player, drawgamewindow, winWidth, optionHeight
+from View.MainMenuView import drawgamewindow, winWidth, optionHeight, FPS, background, player
 
 pygame.init()  # need to initialize pygame before using
 
@@ -71,8 +71,13 @@ def option_click_event(option, xmouse, ymouse):
             running = False
         print(option.name)
 
+
+menuBackground = pygame.sprite.Group()
+playerShip = player
+for b in background:
+    menuBackground.add(b)
 while running:
-    clock.tick(12)
+    dt = clock.tick(FPS) / 1000  # Amount of seconds between each loop.
     mouse = pygame.mouse.get_pos()
     # Controls frame rate
     for event in pygame.event.get():
@@ -88,5 +93,5 @@ while running:
             handlekeypress()
         # checking for when the keys are pressed. Using event type so that keys wont register multiple times
 
-    drawgamewindow(mouse)
+    drawgamewindow(mouse, dt, menuBackground, playerShip)
 pygame.quit()
