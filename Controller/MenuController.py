@@ -1,7 +1,7 @@
 import pygame  # importation for pygame
 
 import Model
-
+import time
 from Model import optionTuple
 
 from View.MainMenuView import drawgamewindow, winWidth, optionHeight, FPS, background, player
@@ -63,6 +63,7 @@ def handlekeypress():
         else:
             print(Model.selectedOption.name)
 
+
 def option_click_event(option, xmouse, ymouse):
     global running
     width_spacing = ((winWidth - option.imgWidth) / 2)
@@ -92,6 +93,5 @@ while running:
         if event.type == pygame.KEYDOWN:
             handlekeypress()
         # checking for when the keys are pressed. Using event type so that keys wont register multiple times
-
     drawgamewindow(mouse, dt, menuBackground, playerShip)
 pygame.quit()

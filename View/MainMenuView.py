@@ -32,7 +32,7 @@ clock = pygame.time.Clock()
 win = pygame.display.set_mode((winWidth, widHeight))
 
 # Initialize the background image
-bg = pygame.image.load('../Menu/Main_Menu.png')
+bg = pygame.image.load('Menu/Main_Menu.png')
 # used to display name of window at the top
 pygame.display.set_caption('BEYOND INFINITY')
 
@@ -48,13 +48,13 @@ def load_images(path):
 
 
 # Frames for playership
-BasicShipFrames = load_images('../PlayerShips')
+BasicShipFrames = load_images('PlayerShips')
 # Frames for stars
-Star1 = load_images('../Background/Animated_Star1')
+Star1 = load_images('Background/Animated_Star1')
 
-Star2 = load_images('../Background/Animated_Star2')
+Star2 = load_images('Background/Animated_Star2')
 
-Star3 = load_images('../Background/Animated_Star3')
+Star3 = load_images('Background/Animated_Star3')
 # creates the player object
 player = PlayerShip(100, 350, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
 
