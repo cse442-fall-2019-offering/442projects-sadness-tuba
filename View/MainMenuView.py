@@ -36,6 +36,9 @@ bg = pygame.image.load('Menu/Main_Menu.png')
 # used to display name of window at the top
 pygame.display.set_caption('BEYOND INFINITY')
 
+# Sets the icon for the game
+iconimage = pygame.image.load('PlayerShips/BasicShipFlying0.png')
+pygame.display.set_icon(iconimage)
 
 # Loads all images in directory. The directory must only contain images.
 
