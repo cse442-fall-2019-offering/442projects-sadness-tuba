@@ -49,8 +49,10 @@ def handlekeypress(keys):
     if keys[pygame.K_KP_ENTER] or keys[pygame.K_RETURN]:
         if Model.selectedOption.name == "quit":
             running = False
+            print(Model.selectedOption.name)
         else:
             print(Model.selectedOption.name)
+    return Model.selectedOption.name
 
 
 def option_click_event(option, xmouse, ymouse):
@@ -61,8 +63,6 @@ def option_click_event(option, xmouse, ymouse):
             running = False
         print(option.name)
         return option.name
-
-
 
 
 def main():
