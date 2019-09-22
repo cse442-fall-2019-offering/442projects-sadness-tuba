@@ -42,6 +42,7 @@ pygame.display.set_icon(iconimage)
 
 # Loads all images in directory. The directory must only contain images.
 
+
 def load_images(path):
     images = []
     for file_name in os.listdir(path):

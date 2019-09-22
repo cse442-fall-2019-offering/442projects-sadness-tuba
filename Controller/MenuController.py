@@ -52,7 +52,7 @@ def handlekeypress(keys):
             print(Model.selectedOption.name)
         else:
             print(Model.selectedOption.name)
-    return Model.selectedOption.name
+        return Model.selectedOption.name
 
 
 def option_click_event(option, xmouse, ymouse):
