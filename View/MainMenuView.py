@@ -40,8 +40,8 @@ pygame.display.set_caption('BEYOND INFINITY')
 iconimage = pygame.image.load('PlayerShips/BasicShipFlying0.png')
 pygame.display.set_icon(iconimage)
 
-# Loads all images in directory. The directory must only contain images.
 
+# Loads all images in directory. The directory must only contain images.
 
 def load_images(path):
     images = []
@@ -62,12 +62,18 @@ Star3 = load_images('Background/Animated_Star3')
 # creates the player object
 player = PlayerShip(100, 350, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
 
-background = [AnimatedBackgroundSprite(75, 400, Star1, smallSize, animationTime, 0), AnimatedBackgroundSprite(625, 630, Star1, smallSize, animationTime, 1),
-              AnimatedBackgroundSprite(355, 655, Star1, smallSize, animationTime, 2), AnimatedBackgroundSprite(84, 623, Star1, smallSize, animationTime, 2),
-              AnimatedBackgroundSprite(606, 340, Star2, smallSize, animationTime, 0), AnimatedBackgroundSprite(428, 690, Star2, smallSize, animationTime, 1),
-              AnimatedBackgroundSprite(250, 300, Star2, smallSize, animationTime, 2), AnimatedBackgroundSprite(163, 534, Star2, smallSize, animationTime, 2),
-              AnimatedBackgroundSprite(552, 458, Star3, smallSize, animationTime, 0), AnimatedBackgroundSprite(512, 594, Star3, smallSize, animationTime, 0),
-              AnimatedBackgroundSprite(252, 700, Star3, smallSize, animationTime, 1), AnimatedBackgroundSprite(482, 310, Star3, smallSize, animationTime, 2)]
+background = [AnimatedBackgroundSprite(75, 400, Star1, smallSize, animationTime, 0),
+              AnimatedBackgroundSprite(625, 630, Star1, smallSize, animationTime, 1),
+              AnimatedBackgroundSprite(355, 655, Star1, smallSize, animationTime, 2),
+              AnimatedBackgroundSprite(84, 623, Star1, smallSize, animationTime, 2),
+              AnimatedBackgroundSprite(606, 340, Star2, smallSize, animationTime, 0),
+              AnimatedBackgroundSprite(428, 690, Star2, smallSize, animationTime, 1),
+              AnimatedBackgroundSprite(250, 300, Star2, smallSize, animationTime, 2),
+              AnimatedBackgroundSprite(163, 534, Star2, smallSize, animationTime, 2),
+              AnimatedBackgroundSprite(552, 458, Star3, smallSize, animationTime, 0),
+              AnimatedBackgroundSprite(512, 594, Star3, smallSize, animationTime, 0),
+              AnimatedBackgroundSprite(252, 700, Star3, smallSize, animationTime, 1),
+              AnimatedBackgroundSprite(482, 310, Star3, smallSize, animationTime, 2)]
 
 
 # This definition draws the options onto the pygame window
@@ -87,10 +93,33 @@ def create_options(option, mouse):
         win.blit(option.unhighlighted, (width_spacing, option.yAxisImageSpacing))
 
 
-# This defnition draws the background, player and also updates pygame screen show everything displays onto the window
+def text_objects(text, font):
+    textSurface = font.render(text, True, (0, 0, 0))
+    return textSurface, textSurface.get_rect()
 
 
-def drawgamewindow(mouse, dt, sprite_group, playerShip):
+def button(buttonName, x, y, w, h, ic, ac, action=None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
+        pygame.draw.rect(win, ac, (x, y, w, h))
+
+        # print(click)
+        # if click[0] == 1 and action != None:
+        #      if action == "back":
+        #          1 == 1
+    else:
+        pygame.draw.rect(win, ic, (x, y, w, h))
+
+    smallText = pygame.font.SysFont("consolas", 20)
+    textSurf, textRect = text_objects(buttonName, smallText)
+    textRect.center = ((x + (w / 2)), (y + (h / 2)))
+    win.blit(textSurf, textRect)
+
+
+# This definition draws the background, player and also updates pygame screen show everything displays onto the window
+def drawGameWindow(mouse, dt, sprite_group, playerShip):
     # Displays Menu
     win.blit(bg, (0, 0))
     sprite_group.update(dt)
@@ -99,3 +128,18 @@ def drawgamewindow(mouse, dt, sprite_group, playerShip):
     for j in optionTuple:
         create_options(j, mouse)
     pygame.display.update()
+
+
+def transition(width, height):
+    fade = pygame.Surface((width, height))
+    fade.fill((0, 0, 0))
+    for alpha in range(0, 75):
+        fade.set_alpha(alpha)
+        win.blit(fade, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(2)
+
+
+def drawNextWindow():
+    win.blit(bg, (0, 0))
+    button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
