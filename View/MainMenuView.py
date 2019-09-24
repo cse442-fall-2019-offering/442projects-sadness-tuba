@@ -33,6 +33,8 @@ win = pygame.display.set_mode((winWidth, widHeight))
 
 # Initialize the background image
 bg = pygame.image.load('Menu/Main_Menu.png')
+settingsbg = pygame.image.load('Menu/Settings_Page.png')
+blankbg = pygame.image.load('Menu/Blank_Page.png')
 # used to display name of window at the top
 pygame.display.set_caption('BEYOND INFINITY')
 
@@ -111,15 +113,15 @@ def button(buttonName, x, y, w, h, ic, ac, action=None):
         #          1 == 1
     else:
         pygame.draw.rect(win, ic, (x, y, w, h))
-
-    smallText = pygame.font.SysFont("consolas", 20)
+    all_fonts = pygame.font.get_fonts()
+    smallText = pygame.font.SysFont(all_fonts[8], 20)
     textSurf, textRect = text_objects(buttonName, smallText)
     textRect.center = ((x + (w / 2)), (y + (h / 2)))
     win.blit(textSurf, textRect)
 
 
 # This definition draws the background, player and also updates pygame screen show everything displays onto the window
-def drawGameWindow(mouse, dt, sprite_group, playerShip):
+def drawMainWindow(mouse, dt, sprite_group, playerShip):
     # Displays Menu
     win.blit(bg, (0, 0))
     sprite_group.update(dt)
@@ -140,6 +142,12 @@ def transition(width, height):
         pygame.time.delay(2)
 
 
-def drawNextWindow():
-    win.blit(bg, (0, 0))
+def drawSettingsWindow():
+    win.blit(settingsbg, (0, 0))
     button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
+    pygame.display.update()
+
+def drawBlankWindow():
+    win.blit(blankbg, (0, 0))
+    button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
+    pygame.display.update()

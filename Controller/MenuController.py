@@ -4,16 +4,13 @@ import Model
 import time
 from Model import optionTuple
 
-from View.MainMenuView import drawGameWindow, winWidth, optionHeight, FPS, background, player, transition, widHeight, \
-    drawNextWindow
+from View.MainMenuView import drawMainWindow, drawBlankWindow, winWidth, optionHeight, FPS, background, player, transition, widHeight, \
+    drawSettingsWindow
 
 pygame.init()  # need to initialize pygame before using
 
 running = True
-shopRun = False
-startStageRun = False
-settingRun = False
-
+currentPage = "main"
 
 
 # Use for determining which option gets highlighted when uses keyboard pressed
@@ -25,10 +22,7 @@ commandOptionArray = []
 
 
 def handleKeypress(keys):
-    global running
-    global shopRun
-    global startStageRun
-    global settingRun
+    global running, currentPage
     if keys[pygame.K_DOWN]:
         for p in commandOptionArray:
             if Model.selectedOption.name == p:
@@ -58,89 +52,35 @@ def handleKeypress(keys):
 
     if keys[pygame.K_KP_ENTER] or keys[pygame.K_RETURN]:
         if Model.selectedOption.name == "quit":
+            transition(winWidth, widHeight)
             running = False
-        if Model.selectedOption.name == "start":
-            transition(winWidth, widHeight)
-            startStageRun = True
-            while (startStageRun):
-                drawNextWindow()
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            startStageRun = False
-        if Model.selectedOption.name == "shop":
-            transition(winWidth, widHeight)
-            shopRun = True
-            while (shopRun):
-                drawNextWindow()
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            shopRun = False
-        if Model.selectedOption.name == "settings":
-            transition(winWidth, widHeight)
-            settingRun = True
-            while (settingRun):
-                drawNextWindow()
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            settingRun = False
-        else:
-            print(Model.selectedOption.name)
+        elif Model.selectedOption.name == "settings":
+            currentPage = "settings"
+        elif Model.selectedOption.name == "start":
+            currentPage = "game"
+        print(Model.selectedOption.name)
+        return Model.selectedOption.name
 
 
 def option_click_event(option, xmouse, ymouse):
-    global running
-    global shopRun
-    global startStageRun
-    global settingRun
+    global running, currentPage
     width_spacing = ((winWidth - option.imgWidth) / 2)
     if width_spacing + option.imgWidth > xmouse > width_spacing and option.yAxisImageSpacing + optionHeight > ymouse > option.yAxisImageSpacing:
         if option.name == "quit":
             transition(winWidth, widHeight)
             running = False
-        if option.name == "start":
-            transition(winWidth, widHeight)
-            startStageRun = True
-            while (startStageRun):
-                drawNextWindow()
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            startStageRun = False
-        if option.name == "shop":
-            transition(winWidth, widHeight)
-            shopRun = True
-            while (shopRun):
-                drawNextWindow()
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            shopRun = False
-        if option.name == "settings":
-            transition(winWidth, widHeight)
-            settingRun = True
-            while (settingRun):
-                drawNextWindow()
-                pygame.display.update()
-                for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            settingRun = False
+        elif option.name == "settings":
+            currentPage = "settings"
+        elif option.name == "start":
+            currentPage = "game"
         print(option.name)
         return option.name
 
-
 def main():
-    global running
+    global running, currentPage
     # Starting height for first option
     menuBackground = pygame.sprite.Group()
+    transitionBool = True
     clock = pygame.time.Clock()
     for z in optionTuple:
         commandOptionArray.append(z.name)
@@ -151,18 +91,33 @@ def main():
         dt = clock.tick(FPS) / 1000  # Amount of seconds between each loop.
         mouse = pygame.mouse.get_pos()
         # Controls frame rate
-        drawGameWindow(mouse, dt, menuBackground, player)
+        if transitionBool:
+            transition(winWidth, widHeight)
+            transitionBool = False
+        if currentPage == "main":
+            drawMainWindow(mouse, dt, menuBackground, player)
+        elif currentPage == "settings":
+            drawSettingsWindow()
+        elif currentPage == "game":
+            drawBlankWindow()
         for event in pygame.event.get():
             keys = pygame.key.get_pressed()  # used to check what key on keyboard is pressed
             if event.type == pygame.QUIT:  # pygame.QUIT is the even in which the x button on window is pressed
                 running = False  # set running to false so we break out of loop
             if event.type == pygame.MOUSEBUTTONUP:  # Checks if mouse is clicked
                 print(mouse)
-                for x in optionTuple:
-                    option_click_event(x, mouse[0], mouse[1])
+                if currentPage == "main":
+                    for x in optionTuple:
+                        if option_click_event(x, mouse[0], mouse[1]):
+                            transitionBool = True
             # Checks for key presses
             if event.type == pygame.KEYDOWN:
-                handleKeypress(keys)
+                if currentPage == "main":
+                    if handleKeypress(keys):
+                        transitionBool = True
+                if event.key == pygame.K_ESCAPE and currentPage != "main":
+                    currentPage = "main"
+                    transitionBool = True
             # checking for when the keys are pressed. Using event type so that keys wont register multiple times
 
     pygame.quit()
