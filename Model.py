@@ -23,6 +23,8 @@ shopOption = MenuOption("shop", pygame.image.load('Options/Shop.png'), pygame.im
 settingsOption = MenuOption("settings", pygame.image.load('Options/Settings.png'), pygame.image.load('Options/Settings_Highlighted.png'), 274, 500)
 # 126x44
 quitOption = MenuOption("quit", pygame.image.load('Options/Quit.png'), pygame.image.load('Options/Quit_Highlighted.png'), 126, 575)
+# 146x44
+backOption = MenuOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), (50 + (150 / 2)), (650 + (50 / 2)))
 # Selected option is the  option the user has selected. This will be used to determine when the image becomes
 # highlighted
 selectedOption = startOption

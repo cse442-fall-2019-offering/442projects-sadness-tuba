@@ -2,7 +2,7 @@ import pygame  # importation for pygame
 
 import Model
 import time
-from Model import optionTuple
+from Model import optionTuple, backOption
 
 from View.MainMenuView import drawMainWindow, drawBlankWindow, winWidth, optionHeight, FPS, background, player, transition, widHeight, \
     drawSettingsWindow
@@ -73,6 +73,8 @@ def option_click_event(option, xmouse, ymouse):
             currentPage = "settings"
         elif option.name == "start":
             currentPage = "game"
+        elif option.name == "back":
+            currentPage = "main"
         print(option.name)
         return option.name
 
@@ -97,9 +99,9 @@ def main():
         if currentPage == "main":
             drawMainWindow(mouse, dt, menuBackground, player)
         elif currentPage == "settings":
-            drawSettingsWindow()
+            drawSettingsWindow(mouse)
         elif currentPage == "game":
-            drawBlankWindow()
+            drawBlankWindow(mouse)
         for event in pygame.event.get():
             keys = pygame.key.get_pressed()  # used to check what key on keyboard is pressed
             if event.type == pygame.QUIT:  # pygame.QUIT is the even in which the x button on window is pressed
@@ -110,7 +112,9 @@ def main():
                     for x in optionTuple:
                         if option_click_event(x, mouse[0], mouse[1]):
                             transitionBool = True
-            # Checks for key presses
+                else:
+                    if option_click_event(backOption, mouse[0], mouse[1]):
+                        transitionBool = True
             if event.type == pygame.KEYDOWN:
                 if currentPage == "main":
                     if handleKeypress(keys):

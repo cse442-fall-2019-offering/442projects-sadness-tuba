@@ -4,7 +4,7 @@ import os
 
 import Model
 
-from Model import optionTuple, AnimatedBackgroundSprite, PlayerShip
+from Model import optionTuple, backOption, AnimatedBackgroundSprite, PlayerShip
 
 # Pygame window width
 winWidth = 700
@@ -142,12 +142,14 @@ def transition(width, height):
         pygame.time.delay(2)
 
 
-def drawSettingsWindow():
+def drawSettingsWindow(mouse):
     win.blit(settingsbg, (0, 0))
-    button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
+    #button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
+    create_options(backOption, mouse)
     pygame.display.update()
 
-def drawBlankWindow():
+def drawBlankWindow(mouse):
     win.blit(blankbg, (0, 0))
-    button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
+    #button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
+    create_options(backOption, mouse)
     pygame.display.update()
