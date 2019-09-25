@@ -16,13 +16,11 @@ class MenuOption(object):
 #  option class (button name, image, highlighted image, image width, yaxis)
 #  If you want to add one more option, add 75 to height spacing between each image
 # 346x44
-startOption = MenuOption("start", pygame.image.load('Options/Start_Game.png'), pygame.image.load('Options/Start_Game_Highlighted.png'), 346, 350)
-# 146x44
-shopOption = MenuOption("shop", pygame.image.load('Options/Shop.png'), pygame.image.load('Options/Shop_Highlighted.png'), 146, 425)
+startOption = MenuOption("start", pygame.image.load('Options/Start_Game.png'), pygame.image.load('Options/Start_Game_Highlighted.png'), 346, 375)
 # 274x44
-settingsOption = MenuOption("settings", pygame.image.load('Options/Settings.png'), pygame.image.load('Options/Settings_Highlighted.png'), 274, 500)
+settingsOption = MenuOption("settings", pygame.image.load('Options/Settings.png'), pygame.image.load('Options/Settings_Highlighted.png'), 274, 450)
 # 126x44
-quitOption = MenuOption("quit", pygame.image.load('Options/Quit.png'), pygame.image.load('Options/Quit_Highlighted.png'), 126, 575)
+quitOption = MenuOption("quit", pygame.image.load('Options/Quit.png'), pygame.image.load('Options/Quit_Highlighted.png'), 126, 525)
 # 146x44
 backOption = MenuOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), 146, 675)
 # Selected option is the  option the user has selected. This will be used to determine when the image becomes
@@ -30,7 +28,7 @@ backOption = MenuOption("back", pygame.image.load('Options/Back.png'), pygame.im
 selectedOption = startOption
 
 # a tuple that stores all the men option tuples
-optionTuple = (startOption, shopOption, settingsOption, quitOption)
+optionTuple = (startOption, settingsOption, quitOption)
 
 
 class PlayerShip(pygame.sprite.Sprite):
