@@ -62,7 +62,7 @@ Star2 = load_images('Background/Animated_Star2')
 
 Star3 = load_images('Background/Animated_Star3')
 # creates the player object
-player = PlayerShip(100, 350, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
+player = PlayerShip(100, 375, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
 
 background = [AnimatedBackgroundSprite(75, 400, Star1, smallSize, animationTime, 0),
               AnimatedBackgroundSprite(625, 630, Star1, smallSize, animationTime, 1),

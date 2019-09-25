@@ -151,5 +151,6 @@ class uiUnitTests(unittest.TestCase):
         is_not_expected = "quit"
         self.assertNotEqual(is_not_expected, result)
 
+
 if __name__ == "__main__":
     unittest.main()
