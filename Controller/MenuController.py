@@ -73,8 +73,10 @@ def option_click_event(option, xmouse, ymouse):
             currentPage = "settings"
         elif option.name == "start":
             currentPage = "game"
-        elif option.name == "back":
-            currentPage = "main"
+        print(option.name)
+        return option.name
+    elif option.name == "back" and 25 + option.imgWidth > xmouse > 25 and option.yAxisImageSpacing + optionHeight > ymouse > option.yAxisImageSpacing:
+        currentPage = "main"
         print(option.name)
         return option.name
 

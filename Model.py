@@ -13,7 +13,7 @@ class MenuOption(object):
         self.yAxisImageSpacing = yAxisImageSpacing
 
 
-#  option class (button name, image, highlighted image, image width, height spacing between each image)
+#  option class (button name, image, highlighted image, image width, yaxis)
 #  If you want to add one more option, add 75 to height spacing between each image
 # 346x44
 startOption = MenuOption("start", pygame.image.load('Options/Start_Game.png'), pygame.image.load('Options/Start_Game_Highlighted.png'), 346, 350)
@@ -24,7 +24,7 @@ settingsOption = MenuOption("settings", pygame.image.load('Options/Settings.png'
 # 126x44
 quitOption = MenuOption("quit", pygame.image.load('Options/Quit.png'), pygame.image.load('Options/Quit_Highlighted.png'), 126, 575)
 # 146x44
-backOption = MenuOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), (50 + (150 / 2)), (650 + (50 / 2)))
+backOption = MenuOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), 146, 675)
 # Selected option is the  option the user has selected. This will be used to determine when the image becomes
 # highlighted
 selectedOption = startOption

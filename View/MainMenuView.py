@@ -144,12 +144,22 @@ def transition(width, height):
 
 def drawSettingsWindow(mouse):
     win.blit(settingsbg, (0, 0))
+    width_spacing = 25
     #button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
-    create_options(backOption, mouse)
+    if width_spacing + backOption.imgWidth > mouse[0] > width_spacing and backOption.yAxisImageSpacing + optionHeight > mouse[
+        1] > backOption.yAxisImageSpacing:
+        win.blit(backOption.highlighted, (width_spacing, backOption.yAxisImageSpacing))
+    else:
+        win.blit(backOption.unhighlighted, (width_spacing, backOption.yAxisImageSpacing))
     pygame.display.update()
 
 def drawBlankWindow(mouse):
     win.blit(blankbg, (0, 0))
+    width_spacing = 25
     #button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
-    create_options(backOption, mouse)
+    if width_spacing + backOption.imgWidth > mouse[0] > width_spacing and backOption.yAxisImageSpacing + optionHeight > mouse[
+        1] > backOption.yAxisImageSpacing:
+        win.blit(backOption.highlighted, (width_spacing, backOption.yAxisImageSpacing))
+    else:
+        win.blit(backOption.unhighlighted, (width_spacing, backOption.yAxisImageSpacing))
     pygame.display.update()
