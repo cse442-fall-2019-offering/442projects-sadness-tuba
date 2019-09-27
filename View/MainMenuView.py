@@ -31,7 +31,7 @@ clock = pygame.time.Clock()
 # displays screen with specified window width and window height
 win = pygame.display.set_mode((winWidth, widHeight))
 
-# Initialize the background image
+# Initializes the background image
 bg = pygame.image.load('Menu/Main_Menu.png')
 settingsbg = pygame.image.load('Menu/Settings_Page.png')
 blankbg = pygame.image.load('Menu/Blank_Page.png')
@@ -62,7 +62,7 @@ Star2 = load_images('Background/Animated_Star2')
 
 Star3 = load_images('Background/Animated_Star3')
 # creates the player object
-player = PlayerShip(100, 375, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
+player = PlayerShip(100, optionTuple[0].yAxisImageSpacing, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
 
 background = [AnimatedBackgroundSprite(75, 400, Star1, smallSize, animationTime, 0),
               AnimatedBackgroundSprite(625, 630, Star1, smallSize, animationTime, 1),
@@ -100,6 +100,11 @@ def text_objects(text, font):
     return textSurface, textSurface.get_rect()
 
 
+def menu_select_sound():
+    pygame.mixer.music.load('Menu/Menu_Select.mp3')
+    pygame.mixer.music.play()
+
+
 def button(buttonName, x, y, w, h, ic, ac, action=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -133,6 +138,7 @@ def drawMainWindow(mouse, dt, sprite_group, playerShip):
 
 
 def transition(width, height):
+    menu_select_sound()
     fade = pygame.Surface((width, height))
     fade.fill((0, 0, 0))
     for alpha in range(0, 75):
@@ -145,7 +151,6 @@ def transition(width, height):
 def drawSettingsWindow(mouse):
     win.blit(settingsbg, (0, 0))
     width_spacing = 25
-    #button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
     if width_spacing + backOption.imgWidth > mouse[0] > width_spacing and backOption.yAxisImageSpacing + optionHeight > mouse[
         1] > backOption.yAxisImageSpacing:
         win.blit(backOption.highlighted, (width_spacing, backOption.yAxisImageSpacing))
@@ -156,7 +161,6 @@ def drawSettingsWindow(mouse):
 def drawBlankWindow(mouse):
     win.blit(blankbg, (0, 0))
     width_spacing = 25
-    #button("Back", 50, 650, 150, 50, (200, 200, 200), (100, 100, 100), "back")
     if width_spacing + backOption.imgWidth > mouse[0] > width_spacing and backOption.yAxisImageSpacing + optionHeight > mouse[
         1] > backOption.yAxisImageSpacing:
         win.blit(backOption.highlighted, (width_spacing, backOption.yAxisImageSpacing))

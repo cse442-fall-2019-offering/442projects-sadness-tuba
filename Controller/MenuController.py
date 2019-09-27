@@ -7,6 +7,7 @@ from Model import optionTuple, backOption
 from View.MainMenuView import drawMainWindow, drawBlankWindow, winWidth, optionHeight, FPS, background, player, transition, widHeight, \
     drawSettingsWindow
 
+pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()  # need to initialize pygame before using
 
 running = True
@@ -55,8 +56,10 @@ def handleKeypress(keys):
             transition(winWidth, widHeight)
             running = False
         elif Model.selectedOption.name == "settings":
+            transition(winWidth, widHeight)
             currentPage = "settings"
         elif Model.selectedOption.name == "start":
+            transition(winWidth, widHeight)
             currentPage = "game"
         print(Model.selectedOption.name)
         return Model.selectedOption.name
@@ -66,8 +69,8 @@ def option_click_event(option, xmouse, ymouse):
     global running, currentPage
     width_spacing = ((winWidth - option.imgWidth) / 2)
     if width_spacing + option.imgWidth > xmouse > width_spacing and option.yAxisImageSpacing + optionHeight > ymouse > option.yAxisImageSpacing:
+        transition(winWidth, widHeight)
         if option.name == "quit":
-            transition(winWidth, widHeight)
             running = False
         elif option.name == "settings":
             currentPage = "settings"
@@ -76,6 +79,7 @@ def option_click_event(option, xmouse, ymouse):
         print(option.name)
         return option.name
     elif option.name == "back" and 25 + option.imgWidth > xmouse > 25 and option.yAxisImageSpacing + optionHeight > ymouse > option.yAxisImageSpacing:
+        transition(winWidth, widHeight)
         currentPage = "main"
         print(option.name)
         return option.name
@@ -84,7 +88,6 @@ def main():
     global running, currentPage
     # Starting height for first option
     menuBackground = pygame.sprite.Group()
-    transitionBool = True
     clock = pygame.time.Clock()
     for z in optionTuple:
         commandOptionArray.append(z.name)
@@ -95,9 +98,6 @@ def main():
         dt = clock.tick(FPS) / 1000  # Amount of seconds between each loop.
         mouse = pygame.mouse.get_pos()
         # Controls frame rate
-        if transitionBool:
-            transition(winWidth, widHeight)
-            transitionBool = False
         if currentPage == "main":
             drawMainWindow(mouse, dt, menuBackground, player)
         elif currentPage == "settings":
@@ -112,18 +112,15 @@ def main():
                 print(mouse)
                 if currentPage == "main":
                     for x in optionTuple:
-                        if option_click_event(x, mouse[0], mouse[1]):
-                            transitionBool = True
+                        option_click_event(x, mouse[0], mouse[1])
                 else:
-                    if option_click_event(backOption, mouse[0], mouse[1]):
-                        transitionBool = True
+                    option_click_event(backOption, mouse[0], mouse[1])
             if event.type == pygame.KEYDOWN:
                 if currentPage == "main":
-                    if handleKeypress(keys):
-                        transitionBool = True
+                    handleKeypress(keys)
                 if event.key == pygame.K_ESCAPE and currentPage != "main":
                     currentPage = "main"
-                    transitionBool = True
+                    transition(winWidth, widHeight)
             # checking for when the keys are pressed. Using event type so that keys wont register multiple times
 
     pygame.quit()
