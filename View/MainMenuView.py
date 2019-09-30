@@ -1,169 +1,143 @@
 import pygame  # importation for pygame
-
-import os
-
-import Model
-
-from Model import optionTuple, backOption, AnimatedBackgroundSprite, PlayerShip
-
-# Pygame window width
-winWidth = 700
-
-# Pygame window height
-widHeight = 750
-
-# Height of each menu option image
-optionHeight = 44
-
-# Spacing between each Menu option image
-heightSpacing = 75
-
-smallSize = 32
-
-mediumSize = 64
-
-animationTime = .08
-
-FPS = 60
-
-clock = pygame.time.Clock()
-
-# displays screen with specified window width and window height
-win = pygame.display.set_mode((winWidth, widHeight))
-
-# Initializes the background image
-bg = pygame.image.load('Menu/Main_Menu.png')
-settingsbg = pygame.image.load('Menu/Settings_Page.png')
-blankbg = pygame.image.load('Menu/Blank_Page.png')
-# used to display name of window at the top
-pygame.display.set_caption('BEYOND INFINITY')
-
-# Sets the icon for the game
-iconimage = pygame.image.load('PlayerShips/BasicShipFlying0.png')
-pygame.display.set_icon(iconimage)
+from View.ParentView import View, Sprite
+import View.ShipSelectView as ssv
+import View.SettingsView as settings
+import View.QuitView as quit
 
 
-# Loads all images in directory. The directory must only contain images.
+class MainMenuView(View):
+    def __init__(self):
+        super(MainMenuView, self).__init__()
+        # Height of each menu option image
+        self.optionHeight = 44
+        # Spacing between each Menu option image
+        self.heightSpacing = 75
+        self.bg = pygame.image.load('Menu/Main_Menu.png')
+        self.stars = self.make_stars()
+        self.optionTuple = self.make_menu_options()
+        self.ship = Sprite(100, 375, 64, self.BasicShipFrames, 0)
+        self.selectedOption = self.optionTuple[0]
 
-def load_images(path):
-    images = []
-    for file_name in os.listdir(path):
-        image = pygame.image.load(path + os.sep + file_name).convert()
-        images.append(image)
-    return images
+    def make_menu_options(self):
+        #  option class (button name, image, highlighted image, image width, yaxis)
+        #  If you want to add one more option, add 75 to height spacing between each image
+        # 346x44
+        startOption = MenuOption("start", pygame.image.load('Options/Start_Game.png'),
+                                 pygame.image.load('Options/Start_Game_Highlighted.png'), 346, 375)
+        # 274x44
+        settingsOption = MenuOption("settings", pygame.image.load('Options/Settings.png'),
+                                    pygame.image.load('Options/Settings_Highlighted.png'), 274, 450)
+        # 126x44
+        quitOption = MenuOption("quit", pygame.image.load('Options/Quit.png'),
+                                pygame.image.load('Options/Quit_Highlighted.png'), 126, 525)
+        option_tuple = (startOption, settingsOption, quitOption)
+        return option_tuple
 
+    def make_stars(self):
+        starsBackground = pygame.sprite.Group()
+        background = [Sprite(75, 400, 32, self.star1, 0),
+                      Sprite(625, 630, 32, self.star1, 1),
+                      Sprite(355, 655, 32, self.star1, 2),
+                      Sprite(84, 623, 32, self.star1, 2),
+                      Sprite(606, 340, 32, self.star2, 0),
+                      Sprite(428, 690, 32, self.star2, 1),
+                      Sprite(250, 300, 32, self.star2, 2),
+                      Sprite(163, 534, 32, self.star2, 2),
+                      Sprite(552, 458, 32, self.star3, 0),
+                      Sprite(512, 594, 32, self.star3, 0),
+                      Sprite(252, 700, 32, self.star3, 1),
+                      Sprite(482, 310, 32, self.star3, 2)]
+        for b in background:
+            starsBackground.add(b)
+        return starsBackground
 
-# Frames for playership
-BasicShipFrames = load_images('PlayerShips')
-# Frames for stars
-Star1 = load_images('Background/Animated_Star1')
-
-Star2 = load_images('Background/Animated_Star2')
-
-Star3 = load_images('Background/Animated_Star3')
-# creates the player object
-player = PlayerShip(100, optionTuple[0].yAxisImageSpacing, BasicShipFrames, mediumSize, mediumSize, animationTime, 0)
-
-background = [AnimatedBackgroundSprite(75, 400, Star1, smallSize, animationTime, 0),
-              AnimatedBackgroundSprite(625, 630, Star1, smallSize, animationTime, 1),
-              AnimatedBackgroundSprite(355, 655, Star1, smallSize, animationTime, 2),
-              AnimatedBackgroundSprite(84, 623, Star1, smallSize, animationTime, 2),
-              AnimatedBackgroundSprite(606, 340, Star2, smallSize, animationTime, 0),
-              AnimatedBackgroundSprite(428, 690, Star2, smallSize, animationTime, 1),
-              AnimatedBackgroundSprite(250, 300, Star2, smallSize, animationTime, 2),
-              AnimatedBackgroundSprite(163, 534, Star2, smallSize, animationTime, 2),
-              AnimatedBackgroundSprite(552, 458, Star3, smallSize, animationTime, 0),
-              AnimatedBackgroundSprite(512, 594, Star3, smallSize, animationTime, 0),
-              AnimatedBackgroundSprite(252, 700, Star3, smallSize, animationTime, 1),
-              AnimatedBackgroundSprite(482, 310, Star3, smallSize, animationTime, 2)]
-
-
-# This definition draws the options onto the pygame window
-
-
-def create_options(option, mouse):
-    width_spacing = ((winWidth - option.imgWidth) / 2)
-    if Model.selectedOption.name == option.name:
-        win.blit(option.highlighted, (width_spacing, option.yAxisImageSpacing))
-    elif width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxisImageSpacing + optionHeight > mouse[
-        1] > option.yAxisImageSpacing:
-        win.blit(option.highlighted, (width_spacing, option.yAxisImageSpacing))
-        Model.selectedOption = option
-        player.ycor = option.yAxisImageSpacing
-        player.xcor = width_spacing - 77
-    else:
-        win.blit(option.unhighlighted, (width_spacing, option.yAxisImageSpacing))
-
-
-def text_objects(text, font):
-    textSurface = font.render(text, True, (0, 0, 0))
-    return textSurface, textSurface.get_rect()
-
-
-def menu_select_sound():
-    pygame.mixer.music.load('Menu/Menu_Select.mp3')
-    pygame.mixer.music.play()
-
-
-def button(buttonName, x, y, w, h, ic, ac, action=None):
-    mouse = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
-
-    if x + w > mouse[0] > x and y + h > mouse[1] > y:
-        pygame.draw.rect(win, ac, (x, y, w, h))
-
-        # print(click)
-        # if click[0] == 1 and action != None:
-        #      if action == "back":
-        #          1 == 1
-    else:
-        pygame.draw.rect(win, ic, (x, y, w, h))
-    all_fonts = pygame.font.get_fonts()
-    smallText = pygame.font.SysFont(all_fonts[8], 20)
-    textSurf, textRect = text_objects(buttonName, smallText)
-    textRect.center = ((x + (w / 2)), (y + (h / 2)))
-    win.blit(textSurf, textRect)
-
-
-# This definition draws the background, player and also updates pygame screen show everything displays onto the window
-def drawMainWindow(mouse, dt, sprite_group, playerShip):
-    # Displays Menu
-    win.blit(bg, (0, 0))
-    sprite_group.update(dt)
-    sprite_group.draw(win)
-    playerShip.update(dt, win)
-    for j in optionTuple:
-        create_options(j, mouse)
-    pygame.display.update()
-
-
-def transition(width, height):
-    menu_select_sound()
-    fade = pygame.Surface((width, height))
-    fade.fill((0, 0, 0))
-    for alpha in range(0, 75):
-        fade.set_alpha(alpha)
-        win.blit(fade, (0, 0))
+    def draw(self, mouse, dt):
+        self.screen.blit(self.bg, (0, 0))
+        self.stars.update(self.screen, dt)
+        self.stars.draw(self.screen)
+        self.ship.update(self.screen, dt)
+        for i in self.optionTuple:
+            self.display_options(i, mouse)
         pygame.display.update()
-        pygame.time.delay(2)
+
+    def click_event(self, mouse):
+        print(mouse)
+        for option in self.optionTuple:
+            width_spacing = ((self.winWidth - option.imgWidth) / 2)
+            if width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxis + self.optionHeight > \
+                    mouse[
+                        1] > option.yAxis:
+                self.transition()
+                if self.selectedOption.name == "start":
+                    return ssv.ShipSelectView()
+                elif self.selectedOption.name == "settings":
+                    return settings.SettingsView()
+                elif self.selectedOption.name == "quit":
+                    return quit.QuitView()
+        return self
+
+    def key_event(self, key):
+        if key[pygame.K_DOWN]:
+            for i in self.optionTuple:
+                if i.name == self.selectedOption.name:
+                    for idx, item in enumerate(self.optionTuple):
+                        if self.selectedOption == item and idx < len(self.optionTuple) - 1:
+                            self.selectedOption = self.optionTuple[idx + 1]
+                            break
+                        elif self.selectedOption == item and idx + 1 > len(self.optionTuple) - 1:
+                            self.selectedOption = self.optionTuple[0]
+                            break
+                    self.ship.ycor = self.selectedOption.yAxis
+                    width_spacing = ((self.winWidth - self.selectedOption.imgWidth) / 2)
+                    self.ship.xcor = width_spacing - 77
+                    break
+            return self
+        elif key[pygame.K_UP]:
+            for i in self.optionTuple:
+                if i.name == self.selectedOption.name:
+                    for idx, item in enumerate(self.optionTuple):
+                        if self.selectedOption == item and idx != 0:
+                            self.selectedOption = self.optionTuple[idx - 1]
+                            break
+                        elif self.selectedOption == item and idx == 0:
+                            self.selectedOption = self.optionTuple[len(self.optionTuple) - 1]
+                            break
+                    self.ship.ycor = self.selectedOption.yAxis
+                    width_spacing = ((self.winWidth - self.selectedOption.imgWidth) / 2)
+                    self.ship.xcor = width_spacing - 77
+                    break
+            return self
+        elif key[pygame.K_KP_ENTER] or key[pygame.K_RETURN]:
+            self.transition()
+            if self.selectedOption.name == "quit":
+                return quit.QuitView()
+            elif self.selectedOption.name == "settings":
+                return settings.SettingsView()
+            elif self.selectedOption.name == "start":
+                return ssv.ShipSelectView()
+        else:
+            return self
 
 
-def drawSettingsWindow(mouse):
-    win.blit(settingsbg, (0, 0))
-    width_spacing = 25
-    if width_spacing + backOption.imgWidth > mouse[0] > width_spacing and backOption.yAxisImageSpacing + optionHeight > mouse[
-        1] > backOption.yAxisImageSpacing:
-        win.blit(backOption.highlighted, (width_spacing, backOption.yAxisImageSpacing))
-    else:
-        win.blit(backOption.unhighlighted, (width_spacing, backOption.yAxisImageSpacing))
-    pygame.display.update()
+    def display_options(self, option, mouse):
+        width_spacing = ((self.winWidth - option.imgWidth) / 2)
+        if self.selectedOption.name == option.name:
+            self.screen.blit(option.highlighted, (width_spacing, option.yAxis))
+        elif width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxis + self.optionHeight > \
+                mouse[
+                    1] > option.yAxis:
+            self.screen.blit(option.highlighted, (width_spacing, option.yAxis))
+            self.selectedOption = option
+            self.ship.ycor = option.yAxis
+            self.ship.xcor = width_spacing - 77
+        else:
+            self.screen.blit(option.unhighlighted, (width_spacing, option.yAxis))
 
-def drawBlankWindow(mouse):
-    win.blit(blankbg, (0, 0))
-    width_spacing = 25
-    if width_spacing + backOption.imgWidth > mouse[0] > width_spacing and backOption.yAxisImageSpacing + optionHeight > mouse[
-        1] > backOption.yAxisImageSpacing:
-        win.blit(backOption.highlighted, (width_spacing, backOption.yAxisImageSpacing))
-    else:
-        win.blit(backOption.unhighlighted, (width_spacing, backOption.yAxisImageSpacing))
-    pygame.display.update()
+
+class MenuOption(object):
+    def __init__(self, name, unhighlighted, highlighted, imgWidth, yAxis):
+        self.name = name
+        self.unhighlighted = unhighlighted
+        self.highlighted = highlighted
+        self.imgWidth = imgWidth
+        self.yAxis = yAxis
