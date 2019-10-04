@@ -61,7 +61,6 @@ class MainMenuView(View):
         pygame.display.update()
 
     def click_event(self, mouse):
-        print(mouse)
         for option in self.optionTuple:
             width_spacing = ((self.winWidth - option.imgWidth) / 2)
             if width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxis + self.optionHeight > \

@@ -18,6 +18,7 @@ def main():
             if event.type == pygame.QUIT:  # pygame.QUIT is the even in which the x button on window is pressed
                 cv = View.QuitView.QuitView()
             if event.type == pygame.MOUSEBUTTONUP:
+                print(mouse)
                 cv = cv.click_event(mouse)
             if event.type == pygame.KEYDOWN:
                 key = pygame.key.get_pressed()

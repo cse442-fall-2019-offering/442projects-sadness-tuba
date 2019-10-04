@@ -7,7 +7,7 @@ from View.ParentView import View
 class ShipSelectView(View):
     def __init__(self):
         super(ShipSelectView, self).__init__()
-        self.bg = pygame.image.load('Menu/Blank_Page.png')
+        self.bg = pygame.image.load('Menu/Select_Page.png')
         # 146x44
         self.backButton = BackOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), 25, 675)
 
