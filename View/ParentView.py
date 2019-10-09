@@ -9,6 +9,9 @@ class View(object):
         self.winWidth = 700
         # Pygame window height
         self.widHeight = 750
+        # Volume for sound effects and music
+        self.soundEffectVolume = 0.5
+        self.musicVolume = 0.5
         # Initializes pygame screen
         self.screen = pygame.display.set_mode((self.winWidth, self.widHeight))
         # Frames for playership
@@ -41,6 +44,11 @@ class View(object):
             self.screen.blit(fade, (0, 0))
             pygame.display.update()
             pygame.time.delay(2)
+
+    def play_music(self, path):
+        music = pygame.mixer.Sound(path)
+        music.set_volume(self.musicVolume)
+        return music.play(-1)
 
 
 class Sprite(pygame.sprite.Sprite):

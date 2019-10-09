@@ -8,8 +8,6 @@ class SettingsView(View):
     def __init__(self):
         super(SettingsView, self).__init__()
         self.bg = pygame.image.load('Menu/Settings_Page.png')
-        self.soundEffectVolume = 0.5
-        self.musicVolume = 0.5
         self.stars = self.make_stars()
         # 146x44
         self.backButton = BackOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), 25, 675)

@@ -10,6 +10,7 @@ def main():
     pygame.mixer.music.set_volume(View.SettingsView.SettingsView().soundEffectVolume)  # setting the volume
     cv = View.MainMenuView.MainMenuView()  # cv is current view
     clock = pygame.time.Clock()
+    cv.play_music('Menu/Menu_Track.wav')
     while cv.isRunning():
         dt = clock.tick(60) / 1000
         mouse = pygame.mouse.get_pos()
