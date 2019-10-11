@@ -1,4 +1,5 @@
-import pygame  # importation for pygame
+# importation for pygame and all the views needed as well as view and sprite class
+import pygame
 from View.ParentView import View, Sprite
 import View.ShipSelectView as ssv
 import View.SettingsView as settings
@@ -6,21 +7,30 @@ import View.QuitView as quit
 
 
 class MainMenuView(View):
+    # MainMenuView, child class of ParentView
     def __init__(self):
         super(MainMenuView, self).__init__()
         # Height of each menu option image
         self.optionHeight = 44
         # Spacing between each Menu option image
         self.heightSpacing = 75
+        # background image
         self.bg = pygame.image.load('Menu/Main_Menu.png')
+        # creates all the sprite stars and puts it in Sprite.Group
         self.stars = self.make_stars()
+        # tuple of option classes
         self.optionTuple = self.make_menu_options()
+        # sprite of the ship
         self.ship = Sprite(100, 375, 64, self.BasicShipFrames, 0)
+        # variable of selected option
         self.selectedOption = self.optionTuple[0]
 
+
     def make_menu_options(self):
-        #  option class (button name, image, highlighted image, image width, yaxis)
+        #  creates all the main menu options
+        #  create option classes (button name, image, highlighted image, image width, yaxis)
         #  If you want to add one more option, add 75 to height spacing between each image
+
         # 346x44
         startOption = MenuOption("start", pygame.image.load('Options/Start_Game.png'),
                                  pygame.image.load('Options/Start_Game_Highlighted.png'), 346, 375)
@@ -34,6 +44,7 @@ class MainMenuView(View):
         return option_tuple
 
     def make_stars(self):
+        # creates stars for the main menu background. Returns pygame.sprite.Group() of stars
         starsBackground = pygame.sprite.Group()
         background = [Sprite(75, 400, 32, self.star1, 0),
                       Sprite(625, 630, 32, self.star1, 1),
@@ -52,6 +63,7 @@ class MainMenuView(View):
         return starsBackground
 
     def draw(self, mouse, dt):
+        # repeatedly draws the screen, must provide: (mouse position, milliseconds since last frame)
         self.screen.blit(self.bg, (0, 0))
         self.stars.update(self.screen, dt)
         self.stars.draw(self.screen)
@@ -61,8 +73,9 @@ class MainMenuView(View):
         pygame.display.update()
 
     def click_event(self, mouse):
+        # returns different view if an option is clicked. Otherwise it returns self. Must provide: (mouse position)
         for option in self.optionTuple:
-            width_spacing = ((self.winWidth - option.imgWidth) / 2)
+            width_spacing = ((self.windowWidth - option.imgWidth) / 2)
             if width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxis + self.optionHeight > \
                     mouse[
                         1] > option.yAxis:
@@ -76,6 +89,8 @@ class MainMenuView(View):
         return self
 
     def key_event(self, key):
+        # Either changes the selected option if up or down arrow keys are pressed
+        # or changes view. Must provide (key pressed)
         if key[pygame.K_DOWN]:
             for i in self.optionTuple:
                 if i.name == self.selectedOption.name:
@@ -87,7 +102,7 @@ class MainMenuView(View):
                             self.selectedOption = self.optionTuple[0]
                             break
                     self.ship.ycor = self.selectedOption.yAxis
-                    width_spacing = ((self.winWidth - self.selectedOption.imgWidth) / 2)
+                    width_spacing = ((self.windowWidth - self.selectedOption.imgWidth) / 2)
                     self.ship.xcor = width_spacing - 77
                     break
             return self
@@ -102,7 +117,7 @@ class MainMenuView(View):
                             self.selectedOption = self.optionTuple[len(self.optionTuple) - 1]
                             break
                     self.ship.ycor = self.selectedOption.yAxis
-                    width_spacing = ((self.winWidth - self.selectedOption.imgWidth) / 2)
+                    width_spacing = ((self.windowWidth - self.selectedOption.imgWidth) / 2)
                     self.ship.xcor = width_spacing - 77
                     break
             return self
@@ -117,9 +132,9 @@ class MainMenuView(View):
         else:
             return self
 
-
     def display_options(self, option, mouse):
-        width_spacing = ((self.winWidth - option.imgWidth) / 2)
+        # displays all the options. Must provide (option, mouse position)
+        width_spacing = ((self.windowWidth - option.imgWidth) / 2)
         if self.selectedOption.name == option.name:
             self.screen.blit(option.highlighted, (width_spacing, option.yAxis))
         elif width_spacing + option.imgWidth > mouse[0] > width_spacing and option.yAxis + self.optionHeight > \
@@ -134,6 +149,7 @@ class MainMenuView(View):
 
 
 class MenuOption(object):
+    # option class (button name, image, highlighted image, image width, yaxis)
     def __init__(self, name, unhighlighted, highlighted, imgWidth, yAxis):
         self.name = name
         self.unhighlighted = unhighlighted
