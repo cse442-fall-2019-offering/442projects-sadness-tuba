@@ -18,6 +18,7 @@ class View(object):
         self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
         # Frames for playership
         self.BasicShipFrames = View.load_images('PlayerShips')
+        self.EnemyImpalerShipLvl1Frames = View.load_images('EnemyShips/Lvl1_Enemy_Impaler')
         # Frames for stars
         self.star1 = View.load_images('Background/Animated_Star1')
         self.star2 = View.load_images('Background/Animated_Star2')
@@ -107,6 +108,40 @@ class GameSprite(pygame.sprite.Sprite):
         self.image = images[self.index]
         self.xspeed = speed
         self.yspeed = speed
+
+    def update_time_dependent(self, screen, dt):
+        # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
+        self.currentTime += dt
+        if self.currentTime >= self.animationTime:
+            self.currentTime = 0
+            self.index = (self.index + 1) % len(self.images)
+            self.image = self.images[self.index]
+        screen.blit(self.image, (self.xcor, self.ycor))
+
+    def update(self, screen, dt):
+        # This is the method that's being called when 'all_sprites.update(dt)' is called. Must provide:
+        # (the window, milliseconds since last frame)
+        self.update_time_dependent(screen, dt)
+
+
+class EnemyShip(pygame.sprite.Sprite):
+    # class for a Sprite. To create a sprite you must provide: (x coordinate, y coordinate, size of the image, array of
+    # all the images, and the starting frame)
+    def __init__(self, xcor, ycor, size, images, starting_frame):
+        super(EnemyShip, self).__init__()
+        self.xcor = xcor
+        self.ycor = ycor
+        # creates rectangle for the sprite
+        self.rect = pygame.Rect((xcor, ycor), (size, size))
+        self.images = images
+        # time it takes for the the sprite moves to the next frame
+        self.animationTime = .08
+        self.currentTime = 0
+        self.index = starting_frame
+        # 'image' is the current image of the animation.
+        self.image = images[self.index]
+        self.xspeed = 1
+        self.yspeed = 1
 
     def update_time_dependent(self, screen, dt):
         # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
