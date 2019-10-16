@@ -1,11 +1,9 @@
-import pygame  # importation for pygame
-import View.MainMenuView as main
-
+# importation for pygame and os
+import random
+import pygame
 from View.ParentView import View, GameSprite
 
 # CLass for defining the gameplay portion
-
-
 class GameplayView(View):
     def __init__(self):
         super(GameplayView, self).__init__()
@@ -22,6 +20,8 @@ class GameplayView(View):
         self.bulletSound = pygame.mixer.Sound('Projectiles/Basic_Bullet.wav')
         # List of each bullet
         self.bullet_list = pygame.sprite.Group()
+
+        self.EnemyImpalerLvl1 = GameSprite(random.randint(0, 500), -96, 96, 96, self.EnemyImpalerShipLvl1Frames, 0, 3)
     # Draws background and Player ship
 
     def draw(self, mouse, dt):
@@ -35,6 +35,8 @@ class GameplayView(View):
             if bullet.ycor < -10:
                 self.bullet_list.remove(bullet)
         self.bullet_list.update(self.screen, dt)
+        self.move_enemy_ship_down(self.EnemyImpalerLvl1)
+        self.EnemyImpalerLvl1.update(self.screen, dt)
         pygame.display.update()
 
     def key_event(self, key):
@@ -56,23 +58,5 @@ class GameplayView(View):
                 self.bulletSound.play()
                 self.bullet_list.add(GameSprite(self.player.xcor + (self.player.rect.width/2 - 5), self.player.ycor, 10, 24, self.currentBullet, 0, self.bulletSpeed))
 
-    # def move_player_up(self):
-    #     if self.player.ycor - self.player.yspeed > 0:
-    #         self.player.ycor -= self.player.yspeed
-    # 680
-    # Moves play up when user presses "s"
-
-    # def move_player_down(self):
-    #     if self.player.ycor + self.player.yspeed < self.windowHeight - 70:
-    #         self.player.ycor += self.player.yspeed
-    # 640
-    # Moves play up when user presses "d"
-
-    # def move_player_right(self):
-    #     if self.player.xcor + self.player.xspeed < self.windowWidth - 60:
-    #         self.player.xcor += self.player.xspeed
-
-    # Moves play up when user presses "a"
-    # def move_player_left(self):
-    #     if self.player.xcor + self.player.xspeed > 0:
-    #         self.player.xcor -= self.player.xspeed
+    def move_enemy_ship_down(self, enemyShip):
+        enemyShip.ycor += enemyShip.yspeed
