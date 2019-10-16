@@ -89,15 +89,15 @@ class Sprite(pygame.sprite.Sprite):
         self.update_time_dependent(screen, dt)
 
 
-class PlayerShip(pygame.sprite.Sprite):
+class GameSprite(pygame.sprite.Sprite):
     # class for a Sprite. To create a sprite you must provide: (x coordinate, y coordinate, size of the image, array of
     # all the images, and the starting frame)
-    def __init__(self, xcor, ycor, size, images, starting_frame):
-        super(PlayerShip, self).__init__()
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, speed):
+        super(GameSprite, self).__init__()
         self.xcor = xcor
         self.ycor = ycor
         # creates rectangle for the sprite
-        self.rect = pygame.Rect((xcor, ycor), (size, size))
+        self.rect = pygame.Rect((xcor, ycor), (width, height))
         self.images = images
         # time it takes for the the sprite moves to the next frame
         self.animationTime = .08
@@ -105,8 +105,8 @@ class PlayerShip(pygame.sprite.Sprite):
         self.index = starting_frame
         # 'image' is the current image of the animation.
         self.image = images[self.index]
-        self.xspeed = 4
-        self.yspeed = 4
+        self.xspeed = speed
+        self.yspeed = speed
 
     def update_time_dependent(self, screen, dt):
         # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)

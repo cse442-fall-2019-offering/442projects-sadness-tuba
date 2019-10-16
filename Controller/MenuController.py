@@ -1,7 +1,7 @@
 # importation for pygame, os and all the views
 import pygame
 import os
-import View.MainMenuView, View.QuitView, View.SettingsView, View.GameplayView
+import View.MainMenuView, View.QuitView, View.SettingsView, View.GameplayView, View.ParentView
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
     # need to initialize pygame before using
     pygame.init()
     # setting the volume
-    pygame.mixer.music.set_volume(View.SettingsView.SettingsView().soundEffectVolume)
+    pygame.mixer.music.set_volume(View.ParentView.View().soundEffectVolume)
     # cv is current view
     cv = View.MainMenuView.MainMenuView()
     # clock that the game is running on
