@@ -37,14 +37,7 @@ def main():
                     cv = cv.key_event(key)
         if cv.name == "Gameplay":
             keys = pygame.key.get_pressed()  # checking pressed keys
-            if keys[pygame.K_w]:
-                cv.move_player_up()
-            if keys[pygame.K_s]:
-                cv.move_player_down()
-            if keys[pygame.K_a]:
-                cv.move_player_left()
-            if keys[pygame.K_d]:
-                cv.move_player_right()
+            cv.key_event(keys)
 
 
 if __name__ == "__main__":

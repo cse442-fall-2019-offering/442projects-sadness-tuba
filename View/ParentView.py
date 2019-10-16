@@ -105,8 +105,8 @@ class PlayerShip(pygame.sprite.Sprite):
         self.index = starting_frame
         # 'image' is the current image of the animation.
         self.image = images[self.index]
-        self.xspeed = 3
-        self.yspeed = 3
+        self.xspeed = 4
+        self.yspeed = 4
 
     def update_time_dependent(self, screen, dt):
         # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
