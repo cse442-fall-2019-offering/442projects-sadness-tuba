@@ -80,7 +80,6 @@ class GameplayView(View):
             i.move()
             i.gameSprite.update(self.screen, dt)
             if i.gameSprite.ycor > self.windowHeight + 96:
-                print('removed')
                 self.enemyArray.remove(i)
 
     def move_bullets(self, dt):
@@ -89,7 +88,6 @@ class GameplayView(View):
             bullet.move()
             bullet.gameSprite.update(self.screen, dt)
             if bullet.gameSprite.ycor < -20:
-                print('bullet removed')
                 self.bulletArray.remove(bullet)
 
 
@@ -127,7 +125,7 @@ class Enemy(object):
         self.name = name
         self.gameSprite = game_sprite
         self.speed = speed
-        self.heath = health
+        self.health = health
 
     def move(self):
         # moves the enemy. can customize enemy pathing
@@ -157,49 +155,33 @@ class EnemyFormation(object):
         self.section = section
         self.enemyGroup = []
         # Enemies
-        # Impaler = Enemy('Impaler', GameSprite(section.xaxis, section.yaxis, 96, 96, 'EnemyShips/Lvl1_Enemy_Impaler', 0), 3, 1)
-        # Imperior = Enemy('Imperior', GameSprite(section.xaxis, section.yaxis, 64, 64, 'EnemyShips/Lvl1_Enemy_Imperier', 0), 2, 1)
+        # ['Impaler', GameSprite(section.startPoint, section.yaxis, 96, 96, 'EnemyShips/Lvl1_Enemy_Impaler', 0), 3, 1]
+        # ['Imperier', GameSprite(section.startPoint, section.yaxis, 64, 64, 'EnemyShips/Lvl1_Enemy_Imperier', 0), 2, 1]
 
         if formation_type == 'imp_v1':
-            self.enemyGroup.append(Enemy('Impaler', GameSprite(section.midPoint - 16, section.yaxis, 96, 96,
-                                                               'EnemyShips/Lvl1_Enemy_Impaler', 0), 3,
-                                         1))
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.startPoint, section.yaxis - 64, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0),
-                                         2, 1))
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.endPoint, section.yaxis - 64, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0), 2, 1))
+            self.enemyGroup.append(self.create_enemy('Impaler', section.midPoint - 16, section.yaxis))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.startPoint, section.yaxis - 64))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.endPoint, section.yaxis - 64))
         elif formation_type == 'impaler_diagonal1':
-            self.enemyGroup.append(Enemy('Impaler', GameSprite(section.startPoint, section.yaxis, 96, 96,
-                                                               'EnemyShips/Lvl1_Enemy_Impaler', 0), 3,
-                                         1))
-            self.enemyGroup.append(Enemy('Impaler', GameSprite(section.endPoint - 32, section.yaxis - 64, 96, 96,
-                                                               'EnemyShips/Lvl1_Enemy_Impaler', 0), 3,
-                                         1))
+            self.enemyGroup.append(self.create_enemy('Impaler', section.startPoint, section.yaxis))
+            self.enemyGroup.append(self.create_enemy('Impaler', section.endPoint - 32, section.yaxis - 64))
         elif formation_type == 'impaler_diagonal2':
-            self.enemyGroup.append(Enemy('Impaler', GameSprite(section.startPoint, section.yaxis - 64, 96, 96,
-                                                               'EnemyShips/Lvl1_Enemy_Impaler', 0), 3,
-                                         1))
-            self.enemyGroup.append(Enemy('Impaler', GameSprite(section.endPoint - 32, section.yaxis, 96, 96,
-                                                               'EnemyShips/Lvl1_Enemy_Impaler', 0), 3,
-                                         1))
+            self.enemyGroup.append(self.create_enemy('Impaler', section.startPoint, section.yaxis - 64))
+            self.enemyGroup.append(self.create_enemy('Impaler', section.endPoint - 32, section.yaxis))
         elif formation_type == 'imperier_v1':
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.midPoint, section.yaxis, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0),
-                                         2, 1))
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.startPoint + 16, section.yaxis - 64, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0),
-                                         2, 1))
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.endPoint - 16, section.yaxis - 64, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0),
-                                         2, 1))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.midPoint, section.yaxis))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.startPoint + 16, section.yaxis - 64))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.endPoint - 16, section.yaxis - 64))
         elif formation_type == 'imperier_^1':
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.midPoint, section.yaxis - 64, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0),
-                                         2, 1))
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.startPoint + 16, section.yaxis, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0),
-                                         2, 1))
-            self.enemyGroup.append(Enemy('Imperier', GameSprite(section.endPoint - 16, section.yaxis, 64, 64,
-                                                                'EnemyShips/Lvl1_Enemy_Imperier', 0),
-                                         2, 1))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.midPoint, section.yaxis - 64))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.startPoint + 16, section.yaxis))
+            self.enemyGroup.append(self.create_enemy('Imperier', section.endPoint - 16, section.yaxis))
+
+    def create_enemy(self, enemy, xcor, ycor):
+        if enemy == 'Impaler':
+            enemyShip = Enemy('Impaler', GameSprite(xcor, ycor, 96, 96,'EnemyShips/Lvl1_Enemy_Impaler', 0), 3, 1)
+        elif enemy == 'Imperier':
+            enemyShip = Enemy('Imperier', GameSprite(xcor, ycor, 64, 64, 'EnemyShips/Lvl1_Enemy_Imperier', 0), 2, 1)
+        enemyShip.gameSprite.xcor = xcor
+        enemyShip.gameSprite.ycor = ycor
+        return enemyShip
