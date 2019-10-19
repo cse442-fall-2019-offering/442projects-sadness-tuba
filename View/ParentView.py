@@ -17,14 +17,13 @@ class View(object):
         # Initializes pygame screen
         self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
         # Frames for playership
-        self.BasicShipFrames = View.load_images('PlayerShips')
-        self.EnemyImpalerShipLvl1Frames = View.load_images('EnemyShips/Lvl1_Enemy_Impaler')
+        self.BasicShipFrames = View.load_images('PlayerShips/Infinity')
         # Frames for stars
         self.star1 = View.load_images('Background/Animated_Star1')
         self.star2 = View.load_images('Background/Animated_Star2')
         self.star3 = View.load_images('Background/Animated_Star3')
         pygame.display.set_caption('BEYOND INFINITY')
-        pygame.display.set_icon(pygame.image.load('PlayerShips/BasicShipFlying0.png'))
+        pygame.display.set_icon(pygame.image.load('PlayerShips/Infinity/BasicShipFlying0.png'))
 
     def is_running(self):
         # returns running which either continues or stops the game
@@ -99,13 +98,11 @@ class GameSprite(pygame.sprite.Sprite):
         self.ycor = ycor
         # creates rectangle for the sprite
         self.rect = pygame.Rect((xcor, ycor), (width, height))
-        self.images = images
+        self.images = View.load_images(images)
         # time it takes for the the sprite moves to the next frame
         self.animationTime = .08
         self.currentTime = 0
         self.index = starting_frame
-        # 'image' is the current image of the animation.
-        self.image = images[self.index]
 
     def update_time_dependent(self, screen, dt):
         # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
@@ -113,8 +110,7 @@ class GameSprite(pygame.sprite.Sprite):
         if self.currentTime >= self.animationTime:
             self.currentTime = 0
             self.index = (self.index + 1) % len(self.images)
-            self.image = self.images[self.index]
-        screen.blit(self.image, (self.xcor, self.ycor))
+        screen.blit(self.images[self.index], (self.xcor, self.ycor))
 
     def update(self, screen, dt):
         # This is the method that's being called when 'all_sprites.update(dt)' is called. Must provide:
