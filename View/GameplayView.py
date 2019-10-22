@@ -50,6 +50,7 @@ class GameplayView(View):
         if key[pygame.K_RIGHT] or key[pygame.K_d]:
             if self.player.xcor + self.player.xspeed < self.windowWidth - 60:
                 self.player.xcor += self.player.xspeed
+        # This is to check when player press "spacebar" on keyboard, the ship should shoot a projectile out
         if key[pygame.K_SPACE]:
             if self.bulletTimer <= 0:
                 self.bulletTimer = self.fireRate
