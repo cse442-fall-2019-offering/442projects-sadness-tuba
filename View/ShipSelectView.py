@@ -4,6 +4,8 @@ import View.MainMenuView as main
 import View.GameplayView as gameplay
 from View.ParentView import View, Sprite
 
+# Ship select view controls ship select menu
+
 
 class ShipSelectView(View):
     # ShipSelectView, child class of ParentView
