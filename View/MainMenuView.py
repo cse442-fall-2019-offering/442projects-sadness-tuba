@@ -11,6 +11,7 @@ class MainMenuView(View):
     def __init__(self):
         super(MainMenuView, self).__init__()
         # Height of each menu option image
+        self.name = "MainMenu"
         self.optionHeight = 44
         # Spacing between each Menu option image
         self.heightSpacing = 75

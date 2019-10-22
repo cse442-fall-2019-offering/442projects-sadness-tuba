@@ -8,6 +8,7 @@ class SettingsView(View):
     # SettingsView, child class of ParentView
     def __init__(self):
         super(SettingsView, self).__init__()
+        self.name = "Settings"
         # background image
         self.bg = pygame.image.load('Menu/Settings_Page.png')
         # creates all the sprite stars and puts it in Sprite.Group
