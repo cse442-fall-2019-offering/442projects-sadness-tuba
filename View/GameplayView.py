@@ -35,6 +35,7 @@ class GameplayView(View):
             self.spawn_enemies(i, dt)
         self.move_enemies(dt)
         self.move_bullets(dt)
+        self.enemy_hit()
         self.player.update(self.screen, dt)
         pygame.display.update()
 
@@ -77,6 +78,8 @@ class GameplayView(View):
         for i in self.enemyList:
             i.move()
             i.update(self.screen, dt)
+            # Debug hitbox. Shows enemy hitboxes in red rectangle.
+            # pygame.draw.rect(self.screen, (255, 0, 0), i.hitbox, 3)
             if i.ycor > self.windowHeight + 96:
                 self.enemyList.remove(i)
 
@@ -88,6 +91,13 @@ class GameplayView(View):
             if bullet.ycor < -20:
                 self.bulletArray.remove(bullet)
 
+    def enemy_hit(self):
+        for i in self.enemyList:
+            for bullet in self.bulletArray:
+                if bullet.xcor > i.hitbox[0] and bullet.xcor < i.hitbox[0] + i.hitboxX:
+                    if bullet.ycor > i.hitbox[1] and bullet.ycor < i.hitbox[1] + i.hitboxY:
+                        self.bulletArray.remove(bullet)
+                        self.enemyList.remove(i)
 
 class GameSprite(pygame.sprite.Sprite):
     # class for a Sprite. To create a sprite you must provide: (x coordinate, y coordinate, size of the image, array of
@@ -123,9 +133,9 @@ class Player(GameSprite):
     def __init__(self, xcor, ycor, width, height, images, starting_frame, shoot_type):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
         self.shootType = shoot_type
-        self.fireRate = .5
-        self.playerSpeed = 4
-        self.bulletSpeed = 5
+        self.fireRate = .3
+        self.playerSpeed = 7
+        self.bulletSpeed = 10
         self.smallBasicBullet = ['sm_basic_bullet', 10, 24, 'Projectiles/Small_Basic_Bullet',
                                  pygame.mixer.Sound('Projectiles/Basic_Bullet.wav')]
         self.currentBullet = self.smallBasicBullet
@@ -147,16 +157,20 @@ class Bullet(GameSprite):
 
 class Enemy(GameSprite):
     # enemy class (xcor, ycor, width, height, folder containing the images, starting frame, name of enemy, health, speed)
-    def __init__(self, xcor, ycor, width, height, images, starting_frame, name, health, speed):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, name, health, speed, hitboxX, hitboxY):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
         self.name = name
         self.speed = speed
         self.health = health
+        self.hitboxX = hitboxX
+        self.hitboxY = hitboxY
+        self.hitbox = (self.xcor + 10, self.ycor + 10, hitboxX, hitboxY)
 
     def move(self):
         # moves the enemy. can customize enemy pathing
         if self.name == 'Impaler' or 'Imperier':
             self.ycor += self.speed
+            self.hitbox = (self.xcor + 10, self.ycor + 10, self.hitboxX, self.hitboxY)
 
 
 class Section(object):
@@ -205,9 +219,9 @@ class EnemyFormation(object):
 
     def create_enemy(self, enemy, xcor, ycor):
         if enemy == 'Impaler':
-            enemyShip = Enemy(xcor, ycor, 96, 96, 'EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1)
+            enemyShip = Enemy(xcor, ycor, 96, 96, 'EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1, 75, 75)
         elif enemy == 'Imperier':
-            enemyShip = Enemy(xcor, ycor, 64, 64, 'EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1)
+            enemyShip = Enemy(xcor, ycor, 64, 64, 'EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1, 45, 50)
         enemyShip.xcor = xcor
         enemyShip.ycor = ycor
         return enemyShip
