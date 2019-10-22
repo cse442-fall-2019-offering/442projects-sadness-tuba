@@ -62,7 +62,7 @@ class GameplayView(View):
             bullet = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5), self.player.ycor, self.player.currentBullet[1], self.player.currentBullet[2], self.player.currentBullet[3], 0, self.player)
             self.bulletArray.add(bullet)
             bullet.sound.play()
-
+    # Use to determine where to spawn enemies and the type of enemies that come out in each spawn section.
     def spawn_enemies(self, section, dt):
         # spawns enemy formation in the section. enemyFormation is chosen randomly. Adds enemies from the enemyFormation to enemyList
         section.CD -= dt
