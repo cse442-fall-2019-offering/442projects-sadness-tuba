@@ -1,4 +1,5 @@
 # importation for pygame and os
+import copy
 import random
 import pygame
 from View.ParentView import View
@@ -9,12 +10,13 @@ class GameplayView(View):
     def __init__(self):
         super(GameplayView, self).__init__()
         self.name = "Gameplay"
-        self.bg = pygame.image.load('Menu/Blank_Page.png')
+        self.bg = pygame.image.load('Sprites/Menu/Blank_Page.png')
         # creates player class
-        self.player = Player(310, 600, 64, 64, 'PlayerShips/Infinity', 0, 'single_middle')
+        self.player = Player(310, 600, 64, 64, 'Sprites/PlayerShips/Infinity', 0, 'single_middle', 'Infinity')
         # List of each bullet
         self.bulletArray = pygame.sprite.Group()
         self.bulletTimer = 0
+        self.explosionArray = pygame.sprite.Group()
         # Sections
         self.section1 = Section(1, 0, 180, -96, 10, 20, 1)
         self.section2 = Section(2, 244, 392, -96, 10, 20, 5)
@@ -36,22 +38,34 @@ class GameplayView(View):
         self.move_enemies(dt)
         self.move_bullets(dt)
         self.enemy_hit()
+        for j in self.explosionArray:
+            j.update(self.screen, dt)
         self.player.update(self.screen, dt)
+        # for hitbox in self.player.hitboxArray:
+        #    pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
         pygame.display.update()
 
     def key_event(self, key):
         if key[pygame.K_DOWN] or key[pygame.K_s]:
             if self.player.ycor + self.player.playerSpeed < self.windowHeight - 70:
                 self.player.ycor += self.player.playerSpeed
+                for hitbox in self.player.hitboxArray:
+                    hitbox[1] += self.player.playerSpeed
         if key[pygame.K_UP] or key[pygame.K_w]:
             if self.player.ycor - self.player.playerSpeed > 0:
                 self.player.ycor -= self.player.playerSpeed
+                for hitbox in self.player.hitboxArray:
+                    hitbox[1] -= self.player.playerSpeed
         if key[pygame.K_LEFT] or key[pygame.K_a]:
             if self.player.xcor + self.player.playerSpeed > 0:
                 self.player.xcor -= self.player.playerSpeed
+                for hitbox in self.player.hitboxArray:
+                    hitbox[0] -= self.player.playerSpeed
         if key[pygame.K_RIGHT] or key[pygame.K_d]:
             if self.player.xcor + self.player.playerSpeed < self.windowWidth - 60:
                 self.player.xcor += self.player.playerSpeed
+                for hitbox in self.player.hitboxArray:
+                    hitbox[0] += self.player.playerSpeed
         if key[pygame.K_SPACE]:
             if self.bulletTimer <= 0:
                 self.bulletTimer = self.player.fireRate
@@ -79,7 +93,10 @@ class GameplayView(View):
             i.move()
             i.update(self.screen, dt)
             # Debug hitbox. Shows enemy hitboxes in red rectangle.
-            # pygame.draw.rect(self.screen, (255, 0, 0), i.hitbox, 3)
+            # for hitbox in i.hitboxArray:
+            #     pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
+            # for hurtbox in i.hurtboxArray:
+            #    pygame.draw.rect(self.screen, (0, 0, 255), hurtbox, 3)
             if i.ycor > self.windowHeight + 96:
                 self.enemyList.remove(i)
 
@@ -88,16 +105,28 @@ class GameplayView(View):
         for bullet in self.bulletArray:
             bullet.move()
             bullet.update(self.screen, dt)
+            # pygame.draw.rect(self.screen, (0, 0, 255), bullet.hurtbox, 1)
             if bullet.ycor < -20:
                 self.bulletArray.remove(bullet)
 
     def enemy_hit(self):
         for i in self.enemyList:
             for bullet in self.bulletArray:
-                if bullet.xcor > i.hitbox[0] and bullet.xcor < i.hitbox[0] + i.hitboxX:
-                    if bullet.ycor > i.hitbox[1] and bullet.ycor < i.hitbox[1] + i.hitboxY:
-                        self.bulletArray.remove(bullet)
-                        self.enemyList.remove(i)
+                for hitbox in i.hitboxArray:
+                    if bullet.hurtbox[0] + bullet.hurtbox[2] > hitbox[0] and bullet.hurtbox[0] < hitbox[0] + hitbox[2]:
+                        if bullet.hurtbox[1] + bullet.hurtbox[3] > hitbox[1] and bullet.hurtbox[1] < hitbox[1] + hitbox[3]:
+                            i.health = i.health - self.player.damage
+                            if i.health <= 0:
+                                self.explosionArray.add(Explosion(i.xcor, i.ycor, i.width, i.height, i.explosion, 0))
+                                self.enemyList.remove(i)
+                            else:
+                                self.explosionArray.add(
+                                    Explosion(bullet.xcor, bullet.ycor, bullet.explosionSize, bullet.explosionSize,
+                                          bullet.explosionImages, 0))
+                            self.bulletArray.remove(bullet)
+                            break
+
+
 
 class GameSprite(pygame.sprite.Sprite):
     # class for a Sprite. To create a sprite you must provide: (x coordinate, y coordinate, size of the image, array of
@@ -130,15 +159,22 @@ class GameSprite(pygame.sprite.Sprite):
 
 class Player(GameSprite):
     # player class (xcor, ycor, width, height, folder containing the images, starting frame, player's shooting type)
-    def __init__(self, xcor, ycor, width, height, images, starting_frame, shoot_type):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, shoot_type, name):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
         self.shootType = shoot_type
         self.fireRate = .3
         self.playerSpeed = 7
+        self.playerMaxSpeed = 7
         self.bulletSpeed = 10
-        self.smallBasicBullet = ['sm_basic_bullet', 10, 24, 'Projectiles/Small_Basic_Bullet',
-                                 pygame.mixer.Sound('Projectiles/Basic_Bullet.wav')]
+        self.damage = 1
+        self.smallBasicBullet = ['sm_basic_bullet', 10, 24, 'Sprites/Projectiles/Small_Basic_Bullet',
+                                 pygame.mixer.Sound('Sprites/Projectiles/Basic_Bullet.wav'), 'Sprites/Explosions/16x16_Basic_Explosion', 16]
         self.currentBullet = self.smallBasicBullet
+        self.name = name
+        self.hitboxArray = []
+        if self.name == 'Infinity':
+            self.hitboxArray.append([self.xcor + 25, self.ycor, 15, 50])
+            self.hitboxArray.append([self.xcor + 7, self.ycor + 30, 53, 15])
 
 
 class Bullet(GameSprite):
@@ -148,29 +184,67 @@ class Bullet(GameSprite):
         self.player = player
         self.name = player.currentBullet[0]
         self.sound = player.currentBullet[4]
+        self.explosionImages = player.currentBullet[5]
+        self.explosionSize = player.currentBullet[6]
+        self.hurtbox = [self.xcor, self.ycor + 4, 10, 24]
 
     def move(self):
         # moves the bullet. can customize bullet pathing
         if self.name == 'sm_basic_bullet':
             self.ycor -= self.player.bulletSpeed
+            self.hurtbox[1] -= self.player.bulletSpeed
+
+
+class Explosion(GameSprite):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame):
+        super().__init__(xcor, ycor, width, height, images, starting_frame)
+
+    def update_time_dependent(self, screen, dt):
+        # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
+        self.currentTime += dt
+        if self.currentTime >= self.animationTime:
+            self.currentTime = 0
+            self.index = (self.index + 1) % len(self.images)
+            if self.index == len(self.images) - 1:
+                self.kill()
+        screen.blit(self.images[self.index], (self.xcor, self.ycor))
 
 
 class Enemy(GameSprite):
     # enemy class (xcor, ycor, width, height, folder containing the images, starting frame, name of enemy, health, speed)
-    def __init__(self, xcor, ycor, width, height, images, starting_frame, name, health, speed, hitboxX, hitboxY):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, name, health, speed, explosion):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
+        self.width = width
+        self.height = height
         self.name = name
         self.speed = speed
         self.health = health
-        self.hitboxX = hitboxX
-        self.hitboxY = hitboxY
-        self.hitbox = (self.xcor + 10, self.ycor + 10, hitboxX, hitboxY)
+        self.explosion = explosion
+        self.hitboxArray = []
+
+        if self.name == 'Impaler':
+            self.hitboxArray.append([self.xcor + 10, self.ycor + 20, 75, 30])
+        elif self.name == 'Imperier':
+            self.hitboxArray.append([self.xcor + 20, self.ycor + 10, 25, 50])
+            self.hitboxArray.append([self.xcor + 1, self.ycor + 30, 62, 20])
+
+        self.hurtboxArray = copy.deepcopy(self.hitboxArray)
+        if self.name == 'Impaler':
+            self.hurtboxArray.append([self.xcor + 15, self.ycor + 50, 5, 40])
+            self.hurtboxArray.append([self.xcor + 35, self.ycor + 50, 5, 40])
+            self.hurtboxArray.append([self.xcor + 55, self.ycor + 50, 5, 40])
+            self.hurtboxArray.append([self.xcor + 75, self.ycor + 50, 5, 40])
+
 
     def move(self):
         # moves the enemy. can customize enemy pathing
         if self.name == 'Impaler' or 'Imperier':
             self.ycor += self.speed
-            self.hitbox = (self.xcor + 10, self.ycor + 10, self.hitboxX, self.hitboxY)
+            for hitbox in self.hitboxArray:
+                hitbox[1] += self.speed
+            for hurtbox in self.hurtboxArray:
+                hurtbox[1] += self.speed
+        # self.hitbox = (self.xcor + 10, self.ycor + 10, self.hitboxX, self.hitboxY)
 
 
 class Section(object):
@@ -219,9 +293,9 @@ class EnemyFormation(object):
 
     def create_enemy(self, enemy, xcor, ycor):
         if enemy == 'Impaler':
-            enemyShip = Enemy(xcor, ycor, 96, 96, 'EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1, 75, 75)
+            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1, 'Sprites/Explosions/96x96_Explosion1')
         elif enemy == 'Imperier':
-            enemyShip = Enemy(xcor, ycor, 64, 64, 'EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1, 45, 50)
+            enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1, 'Sprites/Explosions/64x64_Explosion1')
         enemyShip.xcor = xcor
         enemyShip.ycor = ycor
         return enemyShip

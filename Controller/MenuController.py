@@ -16,7 +16,7 @@ def main():
     # clock that the game is running on
     clock = pygame.time.Clock()
     # plays menu music
-    cv.play_music('Menu/Menu_Track.wav')
+    cv.play_music('Sprites/Menu/Menu_Track.wav')
     # while the current view is running, loop
     while cv.is_running():
         dt = clock.tick(60) / 1000

@@ -12,11 +12,11 @@ class ShipSelectView(View):
     def __init__(self):
         super(ShipSelectView, self).__init__()
         self.name = "ShipSelect"
-        self.bg = pygame.image.load('Menu/Select_Page.png')
+        self.bg = pygame.image.load('Sprites/Menu/Select_Page.png')
         self.baseShip = Sprite(310, 350, 64, self.BasicShipFrames, 0)
         # 146x44
-        self.backButton = ButtonOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), 25, 675)
-        self.playButton = ButtonOption("play", pygame.image.load('Options/Play.png'), pygame.image.load('Options/H_Play.png'), 270, 550)
+        self.backButton = ButtonOption("back", pygame.image.load('Sprites/Options/Back.png'), pygame.image.load('Sprites/Options/Back_Highlighted.png'), 25, 675)
+        self.playButton = ButtonOption("play", pygame.image.load('Sprites/Options/Play.png'), pygame.image.load('Sprites/Options/H_Play.png'), 270, 550)
 
     def draw(self, mouse, dt):
         # repeatedly draws the screen, must provide: (mouse position, milliseconds since last frame)
