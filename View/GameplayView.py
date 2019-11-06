@@ -39,6 +39,7 @@ class GameplayView(View):
         self.move_bullets(dt)
         self.enemy_hit()
         self.player_hit(dt)
+        self.health_bar()
         for j in self.explosionArray:
             j.update(self.screen, dt)
         self.player.update(self.screen, dt)
@@ -150,7 +151,10 @@ class GameplayView(View):
                                 playerHitbox[1] + playerHitbox[3]) < enemyHitbox[1] + enemyHitbox[3]:
                             print("3")
 
-
+    def health_bar(self):
+        pygame.draw.rect(self.screen, (0, 128, 0), (self.player.xcor,self.player.ycor+70,self.player.rect.width, 5))
+        for enemy in self.enemyList:
+            pygame.draw.rect(self.screen, (0, 128, 0),(enemy.xcor, enemy.ycor, enemy.rect.width, 5))
 
 class GameSprite(pygame.sprite.Sprite):
     # class for a Sprite. To create a sprite you must provide: (x coordinate, y coordinate, size of the image, array of
