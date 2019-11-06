@@ -38,6 +38,8 @@ def main():
         if cv.name == "Gameplay":
             keys = pygame.key.get_pressed()  # checking pressed keys
             cv.key_event(keys)
+            if cv.game_over():
+                cv = View.MainMenuView.MainMenuView()
 
 
 if __name__ == "__main__":
