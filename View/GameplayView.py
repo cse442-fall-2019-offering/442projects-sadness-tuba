@@ -11,6 +11,7 @@ class GameplayView(View):
         super(GameplayView, self).__init__()
         self.name = "Gameplay"
         self.bg = pygame.image.load('Sprites/Menu/Blank_Page.png')
+        self.gameOver = False
         # creates player class
         self.player = Player(310, 600, 64, 64, 'Sprites/PlayerShips/Infinity', 0, 'single_middle', 'Infinity')
         # List of each bullet
@@ -25,6 +26,8 @@ class GameplayView(View):
         # Enemy Formation
         self.formationTypes = ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1']
         self.enemyList = pygame.sprite.Group()
+        # Display
+        self.heart = View.load_images('Sprites/Player_Info/Heart')
 
     # Draws background and Player ship
 
@@ -42,6 +45,7 @@ class GameplayView(View):
         for j in self.explosionArray:
             j.update(self.screen, dt)
         self.player.update(self.screen, dt)
+        self.display_player_info(self.screen)
         # for hitbox in self.player.hitboxArray:
         #    pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
         pygame.display.update()
@@ -71,6 +75,22 @@ class GameplayView(View):
             if self.bulletTimer <= 0:
                 self.bulletTimer = self.player.fireRate
                 self.shoot_bullet()
+
+    def game_over(self):
+        return self.gameOver
+
+    def display_player_info(self, screen):
+        # displays player info
+        count = 0
+        spacing = 32
+        player_health = self.player.health
+        while count < self.player.health * spacing:
+            screen.blit(self.heart[0], (32 + count, 32))
+            count += spacing
+        while player_health != self.player.maxHealth:
+            player_health += 1
+            screen.blit(self.heart[1], (32 + count, 32))
+            count += spacing
 
     def shoot_bullet(self):
         # player shoots bullet. shootType can be customized to change the starting position of the bullet and how many bullets shot
@@ -111,15 +131,15 @@ class GameplayView(View):
                 self.bulletArray.remove(bullet)
 
     def enemy_hit(self):
-        for i in self.enemyList:
+        for enemy in self.enemyList:
             for bullet in self.bulletArray:
-                for hitbox in i.hitboxArray:
+                for hitbox in enemy.hitboxArray:
                     if bullet.hurtbox[0] + bullet.hurtbox[2] > hitbox[0] and bullet.hurtbox[0] < hitbox[0] + hitbox[2]:
                         if bullet.hurtbox[1] + bullet.hurtbox[3] > hitbox[1] and bullet.hurtbox[1] < hitbox[1] + hitbox[3]:
-                            i.health = i.health - self.player.damage
-                            if i.health <= 0:
-                                self.explosionArray.add(Explosion(i.xcor, i.ycor, i.width, i.height, i.explosion, 0))
-                                self.enemyList.remove(i)
+                            enemy.health = enemy.health - self.player.damage
+                            if enemy.health <= 0:
+                                self.explosionArray.add(Explosion(enemy.xcor, enemy.ycor, enemy.width, enemy.height, enemy.explosion, 0))
+                                self.enemyList.remove(enemy)
                             else:
                                 self.explosionArray.add(
                                     Explosion(bullet.xcor, bullet.ycor, bullet.explosionSize, bullet.explosionSize,
@@ -128,29 +148,23 @@ class GameplayView(View):
                             break
 
     def player_hit(self, dt):
-        self.player.update(self.screen, dt)
-        for playerHitbox in self.player.hitboxArray:
-            # pygame.draw.rect(self.screen, (0, 255, 0), playerHitbox, 3)
-            for i in self.enemyList:
-                for enemyHitbox in i.hitboxArray:
-                    if playerHitbox[0] > enemyHitbox[0] and playerHitbox[0] < enemyHitbox[0] + enemyHitbox[2]:
-                        if playerHitbox[1] > enemyHitbox[1] and playerHitbox[1] < enemyHitbox[1] + enemyHitbox[3]:
-                            print("0")
-                    if (playerHitbox[0] + playerHitbox[2]) > enemyHitbox[0] and (
-                            playerHitbox[0] + playerHitbox[2]) < enemyHitbox[0] + enemyHitbox[2]:
-                        if (playerHitbox[1]) > enemyHitbox[1] and (playerHitbox[1]) < enemyHitbox[1] + enemyHitbox[3]:
-                            print("1")
-                    if playerHitbox[0] > enemyHitbox[0] and (playerHitbox[0]) < enemyHitbox[0] + enemyHitbox[2]:
-                        if (playerHitbox[1] + playerHitbox[3]) > enemyHitbox[1] and (
-                                playerHitbox[1] + playerHitbox[3]) < enemyHitbox[1] + enemyHitbox[3]:
-                            print("2")
-                    if (playerHitbox[0] + playerHitbox[2]) > enemyHitbox[0] and (
-                            playerHitbox[0] + playerHitbox[2]) < enemyHitbox[0] + enemyHitbox[2]:
-                        if (playerHitbox[1] + playerHitbox[3]) > enemyHitbox[1] and (
-                                playerHitbox[1] + playerHitbox[3]) < enemyHitbox[1] + enemyHitbox[3]:
-                            print("3")
-
-
+        if self.player.invincible == False and self.player.health > 0:
+            for hitbox in self.player.hitboxArray:
+                for enemy in self.enemyList:
+                    for hurtbox in enemy.hurtboxArray:
+                        if hurtbox[0] + hurtbox[2] > hitbox[0] and hurtbox[0] < hitbox[0] + hitbox[2] and self.player.invincible == False:
+                            if hurtbox[1] + hurtbox[3] > hitbox[1] and hurtbox[1] < hitbox[1] + hitbox[3] and self.player.invincible == False:
+                                self.player.health -= 1
+                                self.player.invincible = True
+        elif self.player.health <= 0:
+            self.player.invincible = False
+            self.gameOver = True
+        else:
+            if self.player.iFrames < self.player.collisionTime:
+                self.player.invincible = False
+                self.player.collisionTime = 0
+            else:
+                self.player.collisionTime += dt
 
 class GameSprite(pygame.sprite.Sprite):
     # class for a Sprite. To create a sprite you must provide: (x coordinate, y coordinate, size of the image, array of
@@ -192,8 +206,11 @@ class Player(GameSprite):
         self.playerMaxSpeed = 7
         self.bulletSpeed = 10
         self.damage = 1
-        self.width = width
-        self.height = height
+        self.maxHealth = 3
+        self.health = 3
+        self.iFrames = 1.5
+        self.collisionTime = 0
+        self.invincible = False
         self.smallBasicBullet = ['sm_basic_bullet', 10, 24, 'Sprites/Projectiles/Small_Basic_Bullet',
                                  pygame.mixer.Sound('Sprites/Projectiles/Basic_Bullet.wav'), 'Sprites/Explosions/16x16_Basic_Explosion', 16]
         self.currentBullet = self.smallBasicBullet
@@ -202,6 +219,19 @@ class Player(GameSprite):
         if self.name == 'Infinity':
             self.hitboxArray.append([self.xcor + 25, self.ycor, 15, 50])
             self.hitboxArray.append([self.xcor + 7, self.ycor + 30, 53, 15])
+
+    def update_time_dependent(self, screen, dt):
+        # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
+        self.currentTime += dt
+        if self.currentTime >= self.animationTime:
+            self.currentTime = 0
+            self.index = (self.index + 1) % len(self.images)
+        if not self.invincible:
+            screen.blit(self.images[self.index], (self.xcor, self.ycor))
+        else:
+            if self.index % 2:
+                screen.blit(self.images[self.index], (self.xcor, self.ycor))
+
 
 
 class Bullet(GameSprite):
