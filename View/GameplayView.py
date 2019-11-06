@@ -38,6 +38,7 @@ class GameplayView(View):
         self.move_enemies(dt)
         self.move_bullets(dt)
         self.enemy_hit()
+        self.player_hit(dt)
         for j in self.explosionArray:
             j.update(self.screen, dt)
         self.player.update(self.screen, dt)
@@ -94,7 +95,7 @@ class GameplayView(View):
             i.update(self.screen, dt)
             # Debug hitbox. Shows enemy hitboxes in red rectangle.
             # for hitbox in i.hitboxArray:
-            #     pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
+            # pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
             # for hurtbox in i.hurtboxArray:
             #    pygame.draw.rect(self.screen, (0, 0, 255), hurtbox, 3)
             if i.ycor > self.windowHeight + 96:
@@ -125,6 +126,29 @@ class GameplayView(View):
                                           bullet.explosionImages, 0))
                             self.bulletArray.remove(bullet)
                             break
+
+    def player_hit(self, dt):
+        self.player.update(self.screen, dt)
+        for playerHitbox in self.player.hitboxArray:
+            # pygame.draw.rect(self.screen, (0, 255, 0), playerHitbox, 3)
+            for i in self.enemyList:
+                for enemyHitbox in i.hitboxArray:
+                    if playerHitbox[0] > enemyHitbox[0] and playerHitbox[0] < enemyHitbox[0] + enemyHitbox[2]:
+                        if playerHitbox[1] > enemyHitbox[1] and playerHitbox[1] < enemyHitbox[1] + enemyHitbox[3]:
+                            print("0")
+                    if (playerHitbox[0] + playerHitbox[2]) > enemyHitbox[0] and (
+                            playerHitbox[0] + playerHitbox[2]) < enemyHitbox[0] + enemyHitbox[2]:
+                        if (playerHitbox[1]) > enemyHitbox[1] and (playerHitbox[1]) < enemyHitbox[1] + enemyHitbox[3]:
+                            print("1")
+                    if playerHitbox[0] > enemyHitbox[0] and (playerHitbox[0]) < enemyHitbox[0] + enemyHitbox[2]:
+                        if (playerHitbox[1] + playerHitbox[3]) > enemyHitbox[1] and (
+                                playerHitbox[1] + playerHitbox[3]) < enemyHitbox[1] + enemyHitbox[3]:
+                            print("2")
+                    if (playerHitbox[0] + playerHitbox[2]) > enemyHitbox[0] and (
+                            playerHitbox[0] + playerHitbox[2]) < enemyHitbox[0] + enemyHitbox[2]:
+                        if (playerHitbox[1] + playerHitbox[3]) > enemyHitbox[1] and (
+                                playerHitbox[1] + playerHitbox[3]) < enemyHitbox[1] + enemyHitbox[3]:
+                            print("3")
 
 
 
@@ -161,12 +185,15 @@ class Player(GameSprite):
     # player class (xcor, ycor, width, height, folder containing the images, starting frame, player's shooting type)
     def __init__(self, xcor, ycor, width, height, images, starting_frame, shoot_type, name):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
+
         self.shootType = shoot_type
         self.fireRate = .3
         self.playerSpeed = 7
         self.playerMaxSpeed = 7
         self.bulletSpeed = 10
         self.damage = 1
+        self.width = width
+        self.height = height
         self.smallBasicBullet = ['sm_basic_bullet', 10, 24, 'Sprites/Projectiles/Small_Basic_Bullet',
                                  pygame.mixer.Sound('Sprites/Projectiles/Basic_Bullet.wav'), 'Sprites/Explosions/16x16_Basic_Explosion', 16]
         self.currentBullet = self.smallBasicBullet
