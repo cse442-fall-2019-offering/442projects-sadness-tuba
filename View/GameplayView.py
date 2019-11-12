@@ -11,7 +11,6 @@ class GameplayView(View):
         super(GameplayView, self).__init__()
         self.name = "Gameplay"
         self.bg = pygame.image.load('Sprites/Menu/Blank_Page.png')
-        self.gameOver = False
         # creates player class
         self.player = Player(310, 600, 64, 64, 'Sprites/PlayerShips/Infinity', 0, 'single_middle', 'Infinity')
         # List of each bullet
@@ -221,7 +220,7 @@ class Player(GameSprite):
             self.hitboxArray.append([self.xcor + 7, self.ycor + 30, 53, 15])
 
     def update_time_dependent(self, screen, dt):
-        # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
+        # Sprite flickers if invincible
         self.currentTime += dt
         if self.currentTime >= self.animationTime:
             self.currentTime = 0

@@ -7,6 +7,7 @@ class View(object):
     #  parent class of view
     def __init__(self):
         self.running = True
+        self.gameOver = False
         # Pygame window width
         self.windowWidth = 700
         # Pygame window height
@@ -34,7 +35,7 @@ class View(object):
         # loads images and returns the images in an array
         images = []
         for file_name in os.listdir(path):
-            image = pygame.image.load(path + os.sep + file_name).convert()
+            image = pygame.image.load(path + os.sep + file_name).convert_alpha()
             images.append(image)
         return images
 
