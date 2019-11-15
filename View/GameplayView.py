@@ -19,13 +19,14 @@ class GameplayView(View):
         self.enemyBulletArray = pygame.sprite.Group()
         self.bulletTimer = 0
         self.explosionArray = pygame.sprite.Group()
+        self.enemyExplosionArray = pygame.sprite.Group()
         # Sections
-        self.section1 = Section(1, 0, 180, -96, 10, 20, 1)
-        self.section2 = Section(2, 244, 392, -96, 10, 20, 5)
-        self.section3 = Section(3, 456, 636, -96, 10, 20, 1)
+        self.section1 = Section(1, 0, 180, -96, 6, 10, 1)
+        self.section2 = Section(2, 244, 392, -96, 6, 10, 5)
+        self.section3 = Section(3, 456, 636, -96, 6, 10, 1)
         self.sectionArray = [self.section1, self.section2, self.section3]
-        # Enemy Formation ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1', 'scatter_v1']
-        self.formationTypes = ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1', 'scatter_v1', 'scatter_^1', 'scatimp_^1']
+        # Enemy Formation ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1', 'scatter_v1', 'scatter_^1', 'scatimp_^1', 'KZBomber_diagonal1', 'KZBomber_diagonal1']
+        self.formationTypes = ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1', 'scatter_v1', 'scatter_^1', 'scatimp_^1','KZBomber_^1', 'KZBomber_v1']
         self.enemyList = pygame.sprite.Group()
         # Display
         self.heart = View.load_images('Sprites/Player_Info/Heart')
@@ -44,13 +45,16 @@ class GameplayView(View):
         self.move_enemies(dt)
         self.move_bullets(dt)
         self.enemy_hit()
-        self.player_hit(dt)
+        self.check_player_hit(dt)
         self.player.update(self.screen, dt)
         for j in self.explosionArray:
             j.update(self.screen, dt)
+        for j in self.enemyExplosionArray:
+            j.update(self.screen, dt)
         self.display_player_info(self.screen)
+        # Player Hitbox
         # for hitbox in self.player.hitboxArray:
-        #    pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
+        #  pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
         pygame.display.update()
 
     def key_event(self, key):
@@ -117,12 +121,13 @@ class GameplayView(View):
     def move_enemies(self, dt):
         # moves all enemies on the screen and removes them when they leave the screen
         for i in self.enemyList:
-            i.move()
+            i.move(self.windowWidth)
+            # enemy abilities
             if i.ability(dt):
                 if i.name == 'Imperier':
                     bullet = EnemyBullet(i.xcor + (i.rect.width / 2) - 15, i.ycor + i.height - 12,
                                     10, 24,
-                                    'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, i.name, pygame.mixer.Sound('Sprites/Projectiles/Small_Red_Bullet.wav'), 3, 0)
+                                    'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, 'small_red_bullet', i.name, pygame.mixer.Sound('Sprites/Projectiles/Small_Red_Bullet.wav'), 3, 0)
                     self.enemyBulletArray.add(bullet)
                     bullet.sound.play()
                 elif i.name == 'Impaler':
@@ -130,15 +135,15 @@ class GameplayView(View):
                 elif i.name == 'Scatter':
                     bullet1 = EnemyBullet(i.xcor + (i.rect.width / 2) - 15, i.ycor + i.height - 12,
                                          10, 24,
-                                         'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, i.name,
+                                         'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, 'small_red_bullet', i.name,
                                          pygame.mixer.Sound('Sprites/Projectiles/Small_Red_Bullet.wav'), 3, .5)
                     bullet2 = EnemyBullet(i.xcor + (i.rect.width / 2) - 15, i.ycor + i.height - 12,
                                          10, 24,
-                                         'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, i.name,
+                                         'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, 'small_red_bullet', i.name,
                                          pygame.mixer.Sound('Sprites/Projectiles/Small_Red_Bullet.wav'), 3, -.5)
                     bullet3 = EnemyBullet(i.xcor + (i.rect.width / 2) - 15, i.ycor + i.height - 12,
                                          10, 24,
-                                         'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, i.name,
+                                         'Sprites/Projectiles/Small_Enemy_Red_Bullet', 0, 'small_red_bullet', i.name,
                                          pygame.mixer.Sound('Sprites/Projectiles/Small_Red_Bullet.wav'), 3, 0)
                     self.enemyBulletArray.add(bullet1)
                     self.enemyBulletArray.add(bullet2)
@@ -150,14 +155,14 @@ class GameplayView(View):
             i.update(self.screen, dt)
             # Debug hitbox. Shows enemy hitboxes in red rectangle.
             # for hitbox in i.hitboxArray:
-            #     pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
+            #    pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
             # for hurtbox in i.hurtboxArray:
             #    pygame.draw.rect(self.screen, (0, 0, 255), hurtbox, 3)
             if i.ycor > self.windowHeight + 96:
                 self.enemyList.remove(i)
 
     def move_bullets(self, dt):
-        # moves all player bullets on the screen and removes them when they leave the screen
+        # moves all player bullets on the screen and removes them when they leave the screen shows bullet hurtbox
         for bullet in self.bulletArray:
             bullet.move()
             bullet.update(self.screen, dt)
@@ -179,7 +184,13 @@ class GameplayView(View):
                         if bullet.hurtbox[1] + bullet.hurtbox[3] > hitbox[1] and bullet.hurtbox[1] < hitbox[1] + hitbox[3]:
                             enemy.health = enemy.health - self.player.damage
                             if enemy.health <= 0:
-                                self.explosionArray.add(Explosion(enemy.xcor, enemy.ycor, enemy.width, enemy.height, enemy.explosion, 0, enemy.explosionSound))
+                                if enemy.explosionSize != enemy.width:
+                                    if enemy.category == 'explode':
+                                        self.enemyExplosionArray.add(EnemyExplosion(enemy.xcor - (enemy.explosionSize-enemy.width)/2, enemy.ycor, enemy.explosionSize, enemy.explosionSize, enemy.explosion, 0, enemy.explosionSound))
+                                    else:
+                                        self.explosionArray.add(Explosion(enemy.xcor - (enemy.explosionSize-enemy.width)/2, enemy.ycor, enemy.explosionSize, enemy.explosionSize, enemy.explosion, 0, enemy.explosionSound))
+                                else:
+                                    self.explosionArray.add(Explosion(enemy.xcor, enemy.ycor, enemy.explosionSize, enemy.explosionSize, enemy.explosion, 0, enemy.explosionSound))
                                 self.player.score += enemy.score
                                 self.enemyList.remove(enemy)
                             else:
@@ -189,23 +200,29 @@ class GameplayView(View):
                             self.bulletArray.remove(bullet)
                             break
 
-    def player_hit(self, dt):
+    def check_player_hit(self, dt):
         if self.player.invincible == False and self.player.health > 0:
             for hitbox in self.player.hitboxArray:
                 for enemy in self.enemyList:
                     for hurtbox in enemy.hurtboxArray:
                         if hurtbox[0] + hurtbox[2] > hitbox[0] and hurtbox[0] < hitbox[0] + hitbox[2] and self.player.invincible == False:
                             if hurtbox[1] + hurtbox[3] > hitbox[1] and hurtbox[1] < hitbox[1] + hitbox[3] and self.player.invincible == False:
-                                self.player.health -= 1
-                                self.player.invincible = True
+                                self.player_hit()
+                                if enemy.category == 'explode':
+                                    self.explosionArray.add(Explosion(enemy.xcor - (enemy.explosionSize-enemy.width)/2, enemy.ycor, enemy.explosionSize, enemy.explosionSize, enemy.explosion, 0, enemy.explosionSound))
+                                    self.enemyList.remove(enemy)
                 for bullet in self.enemyBulletArray:
                     if bullet.hurtbox[0] + bullet.hurtbox[2] > hitbox[0] and bullet.hurtbox[0] < hitbox[0] + hitbox[2]:
                         if bullet.hurtbox[1] + bullet.hurtbox[3] > hitbox[1] and bullet.hurtbox[1] < hitbox[1] + hitbox[
                             3]:
-                            self.player.health -= 1
-                            self.player.invincible = True
+                            self.player_hit()
                             self.enemyBulletArray.remove(bullet)
                             break
+                for explosion in self.enemyExplosionArray:
+                    for hurtbox in explosion.hurtboxArray:
+                        if hurtbox[0] + hurtbox[2] > hitbox[0] and hurtbox[0] < hitbox[0] + hitbox[2] and self.player.invincible == False:
+                            if hurtbox[1] + hurtbox[3] > hitbox[1] and hurtbox[1] < hitbox[1] + hitbox[3] and self.player.invincible == False:
+                                self.player_hit()
         elif self.player.health <= 0:
             self.player.invincible = False
             self.gameOver = self.player.dead
@@ -215,6 +232,11 @@ class GameplayView(View):
                 self.player.collisionTime = 0
             else:
                 self.player.collisionTime += dt
+
+    def player_hit(self):
+        self.player.health -= 1
+        self.player.invincible = True
+        self.player.hitSound.play()
 
 class GameSprite(pygame.sprite.Sprite):
     # class for a Sprite. To create a sprite you must provide: (x coordinate, y coordinate, size of the image, array of
@@ -260,6 +282,7 @@ class Player(GameSprite):
         self.health = 3
         self.score = 0
         self.dead = False
+        self.deathSoundPlayed = False
         self.iFrames = 1.5
         self.collisionTime = 0
         self.invincible = False
@@ -268,10 +291,12 @@ class Player(GameSprite):
                                  pygame.mixer.Sound('Sprites/Projectiles/Basic_Bullet.wav'), 'Sprites/Explosions/16x16_Basic_Explosion', 16, pygame.mixer.Sound('Sprites/Projectiles/Basic_Bullet_Hit.wav')]
         self.currentBullet = self.smallBasicBullet
         self.name = name
+        self.hitSound = pygame.mixer.Sound('Sprites/PlayerShips/Ship_Hit.wav')
+        self.deathSound = pygame.mixer.Sound('Sprites/Explosions/Multiple_Explosions.wav')
         self.hitboxArray = []
         if self.name == 'Infinity':
             self.hitboxArray.append([self.xcor + 25, self.ycor, 15, 50])
-            self.hitboxArray.append([self.xcor + 7, self.ycor + 30, 53, 15])
+            self.hitboxArray.append([self.xcor + 7, self.ycor + 35, 53, 10])
 
     def update_time_dependent(self, screen, dt):
         # Sprite flickers if invincible
@@ -286,6 +311,9 @@ class Player(GameSprite):
                 if self.index % 2:
                     screen.blit(self.images[self.index], (self.xcor, self.ycor))
         else:
+            if not self.deathSoundPlayed:
+                self.deathSound.play()
+                self.deathSoundPlayed = True
             if self.currentTime >= self.animationTime:
                 self.currentTime = 0
                 self.index = (self.index + 1) % len(self.des_images)
@@ -317,13 +345,18 @@ class Bullet(GameSprite):
 
 class EnemyBullet(GameSprite):
     # bullet class (xcor, ycor, width, height, folder containing the images, starting frame, player)
-    def __init__(self, xcor, ycor, width, height, images, starting_frame, enemy_name, sound, speed, x):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, bullet_name, enemy_name, sound, speed, x):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
+        self.bulletName = bullet_name
         self.name = enemy_name
         self.sound = sound
         self.hurtbox = [self.xcor + 10, self.ycor + 4, 12, 24]
         self.speed = speed
         self.x = x
+
+        if self.bulletName == 'small_red_bullet':
+            self.hurtbox = [self.xcor + 10, self.ycor + 4, 12, 24]
+
         # self.angle = math.acos((speed**2)/((x**2+speed**2)*(speed**2)))
         # print(self.angle)
         # self.images = [pygame.transform.rotate(self.images[0], self.angle)]
@@ -360,9 +393,35 @@ class Explosion(GameSprite):
         screen.blit(self.images[self.index], (self.xcor, self.ycor))
 
 
+class EnemyExplosion(GameSprite):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, sound):
+        super().__init__(xcor, ycor, width, height, images, starting_frame)
+        self.sound = sound
+        self.soundPlayed = False
+        self.hurtboxArray = []
+
+        if width == 128:
+            self.hurtboxArray.append([self.xcor + 56, self.ycor, 16, 128])
+            self.hurtboxArray.append([self.xcor, self.ycor + 56, 128, 16])
+            self.hurtboxArray.append([self.xcor + 20, self.ycor + 20, 87, 87])
+
+    def update_time_dependent(self, screen, dt):
+        # Updates the image of Sprite based on animation_time. Must provide: (the window, milliseconds since last frame)
+        if not self.soundPlayed:
+            self.sound.play()
+            self.soundPlayed = True
+        self.currentTime += dt
+        if self.currentTime >= self.animationTime:
+            self.currentTime = 0
+            self.index = (self.index + 1) % len(self.images)
+            if self.index == len(self.images) - 1:
+                self.kill()
+        screen.blit(self.images[self.index], (self.xcor, self.ycor))
+
+
 class Enemy(GameSprite):
     # enemy class (xcor, ycor, width, height, folder containing the images, starting frame, name of enemy, health, speed)
-    def __init__(self, xcor, ycor, width, height, images, starting_frame, name, health, speed, score, abilitycd, explosion, explosion_sound):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, name, health, speed, score, abilitycd, explosion, explosion_sound, explosion_size):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
         self.width = width
         self.height = height
@@ -372,9 +431,15 @@ class Enemy(GameSprite):
         self.score = score
         self.explosion = explosion
         self.explosionSound = explosion_sound
+        self.explosionSize = explosion_size
         self.hitboxArray = []
         self.abilitycd = abilitycd
         self.cd = self.abilitycd
+        self.bool = bool(random.getrandbits(1))
+        self.category = 'normal'
+        if self.name == 'KZBomber':
+            self.category = 'explode'
+
 
         if self.name == 'Impaler':
             self.hitboxArray.append([self.xcor + 10, self.ycor + 20, 75, 30])
@@ -385,6 +450,9 @@ class Enemy(GameSprite):
             self.hitboxArray.append([self.xcor + 27, self.ycor + 13, 10, 50])
             self.hitboxArray.append([self.xcor + 15, self.ycor + 25, 35, 20])
             self.hitboxArray.append([self.xcor, self.ycor + 20, 64, 20])
+        elif self.name == 'KZBomber':
+            self.hitboxArray.append([self.xcor + 5, self.ycor + 30, 55, 10])
+            self.hitboxArray.append([self.xcor + 12, self.ycor + 10, 40, 45])
 
         self.hurtboxArray = copy.deepcopy(self.hitboxArray)
         if self.name == 'Impaler':
@@ -394,21 +462,45 @@ class Enemy(GameSprite):
             self.hurtboxArray.append([self.xcor + 75, self.ycor + 50, 5, 40])
 
 
-    def move(self):
+    def move(self, windowWidth):
         # moves the enemy. can customize enemy pathing
-        if self.name == 'Impaler' or 'Imperier':
+        if self.name == 'KZBomber':
+            self.ycor += self.speed
+            if self.xcor >= windowWidth - self.width:
+                self.bool = True
+            elif self.xcor <= 0:
+                self.bool = False
+            if not self.bool:
+                self.xcor += self.speed/2
+            else:
+                self.xcor -= self.speed/2
+            for hitbox in self.hitboxArray:
+                hitbox[1] += self.speed
+                if not self.bool:
+                    hitbox[0] += self.speed/2
+                else:
+                    hitbox[0] -= self.speed/2
+            for hurtbox in self.hurtboxArray:
+                hurtbox[1] += self.speed
+                if not self.bool:
+                    hurtbox[0] += self.speed / 2
+                else:
+                    hurtbox[0] -= self.speed / 2
+        else:
             self.ycor += self.speed
             for hitbox in self.hitboxArray:
                 hitbox[1] += self.speed
             for hurtbox in self.hurtboxArray:
                 hurtbox[1] += self.speed
-        # self.hitbox = (self.xcor + 10, self.ycor + 10, self.hitboxX, self.hitboxY)
 
     def ability(self, dt):
-        self.cd -= dt
-        if self.cd <= 0:
-            self.cd = self.abilitycd
-            return True
+        if not self.abilitycd == 0:
+            self.cd -= dt
+            if self.cd <= 0:
+                self.cd = self.abilitycd
+                return True
+            else:
+                return False
         else:
             return False
 
@@ -470,14 +562,24 @@ class EnemyFormation(object):
             self.enemyGroup.append(self.create_enemy('Impaler', section.midPoint - 16, section.yaxis))
             self.enemyGroup.append(self.create_enemy('Scatter', section.startPoint, section.yaxis - 64))
             self.enemyGroup.append(self.create_enemy('Scatter', section.endPoint, section.yaxis - 64))
+        elif formation_type == 'KZBomber_^1':
+            self.enemyGroup.append(self.create_enemy('KZBomber', section.midPoint - 16, section.yaxis))
+            self.enemyGroup.append(self.create_enemy('KZBomber', section.startPoint, section.yaxis - 64))
+            self.enemyGroup.append(self.create_enemy('KZBomber', section.endPoint, section.yaxis - 64))
+        elif formation_type == 'KZBomber_v1':
+            self.enemyGroup.append(self.create_enemy('KZBomber', section.midPoint, section.yaxis))
+            self.enemyGroup.append(self.create_enemy('KZBomber', section.startPoint + 16, section.yaxis - 64))
+            self.enemyGroup.append(self.create_enemy('KZBomber', section.endPoint - 16, section.yaxis - 64))
 
     def create_enemy(self, enemy, xcor, ycor):
         if enemy == 'Impaler':
-            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1.5, 150, random.uniform(1, 6), 'Sprites/Explosions/96x96_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'))
+            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1.5, 150, random.uniform(1, 5), 'Sprites/Explosions/96x96_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 96)
         elif enemy == 'Imperier':
-            enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1, 100, random.uniform(2, 6), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'))
+            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1, 100, random.uniform(4, 7), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 64)
         elif enemy == 'Scatter':
-            enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_Scatter', 0, enemy, 2, 1, 250, random.uniform(2, 6), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'))
+            enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_Scatter', 0, enemy, 2, 1, 250, random.uniform(4, 8), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 64)
+        elif enemy =='KZBomber':
+            enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_KZ_Bomber', 0, enemy, 1, 1.5, 50, 0, 'Sprites/Explosions/128x128_Red_Explosion', pygame.mixer.Sound('Sprites/Explosions/Explosion2.wav'), 128)
         enemyShip.xcor = xcor
         enemyShip.ycor = ycor
         return enemyShip
