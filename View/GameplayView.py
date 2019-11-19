@@ -259,8 +259,8 @@ class Player(GameSprite):
         self.playerMaxSpeed = 7
         self.bulletSpeed = 10
         self.damage = 1
-        self.maxHealth = 1 # original = 3
-        self.health = 1 # original = 3
+        self.maxHealth = 3 
+        self.health = 3
         self.score = 0
         self.dead = False
         self.iFrames = 1.5
