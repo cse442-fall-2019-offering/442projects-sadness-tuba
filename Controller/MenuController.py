@@ -1,7 +1,7 @@
 # importation for pygame, os and all the views
 import pygame
 import os
-import View.MainMenuView, View.QuitView, View.SettingsView, View.GameplayView, View.ParentView
+import View.MainMenuView, View.QuitView, View.SettingsView, View.GameplayView, View.ParentView, View.GameOverView
 
 
 def main():
@@ -38,6 +38,8 @@ def main():
         if cv.name == "Gameplay":
             keys = pygame.key.get_pressed()  # checking pressed keys
             cv.key_event(keys)
+            if cv.game_over():
+                cv = View.GameOverView.GameOverView()
 
 
 if __name__ == "__main__":
