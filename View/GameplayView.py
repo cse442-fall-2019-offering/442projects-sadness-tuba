@@ -22,9 +22,9 @@ class GameplayView(View):
         self.explosionArray = pygame.sprite.Group()
         self.enemyExplosionArray = pygame.sprite.Group()
         # Sections
-        self.section1 = Section(1, 0, 180, -96, 6, 10, 1)
-        self.section2 = Section(2, 244, 392, -96, 6, 10, 5)
-        self.section3 = Section(3, 456, 636, -96, 6, 10, 1)
+        self.section1 = Section(1, 0, 180, -96, 6, 9, 1)
+        self.section2 = Section(2, 244, 392, -96, 6, 9, 5)
+        self.section3 = Section(3, 456, 636, -96, 6, 9, 1)
         self.sectionArray = [self.section1, self.section2, self.section3]
         # Enemy Formation ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1', 'scatter_v1', 'scatter_^1', 'scatimp_^1', 'KZBomber_diagonal1', 'KZBomber_diagonal1']
         self.formationTypes = ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1', 'scatter_v1', 'scatter_^1', 'scatimp_^1','KZBomber_^1', 'KZBomber_v1']
@@ -576,11 +576,11 @@ class EnemyFormation(object):
 
     def create_enemy(self, enemy, xcor, ycor):
         if enemy == 'Impaler':
-            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1.5, 150, random.uniform(1, 5), 'Sprites/Explosions/96x96_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 96)
+            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Impaler', 0, enemy, 3, 1.5, 150, random.uniform(1, 4), 'Sprites/Explosions/96x96_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 96)
         elif enemy == 'Imperier':
-            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1, 100, random.uniform(4, 7), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 64)
+            enemyShip = Enemy(xcor, ycor, 96, 96, 'Sprites/EnemyShips/Lvl1_Enemy_Imperier', 0, enemy, 2, 1, 100, random.uniform(2, 7), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 64)
         elif enemy == 'Scatter':
-            enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_Scatter', 0, enemy, 2, 1, 250, random.uniform(4, 8), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 64)
+            enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_Scatter', 0, enemy, 2, 1, 250, random.uniform(2, 7), 'Sprites/Explosions/64x64_Explosion1', pygame.mixer.Sound('Sprites/Explosions/Explosion1.wav'), 64)
         elif enemy =='KZBomber':
             enemyShip = Enemy(xcor, ycor, 64, 64, 'Sprites/EnemyShips/Lvl1_Enemy_KZ_Bomber', 0, enemy, 1, 1.5, 50, 0, 'Sprites/Explosions/128x128_Red_Explosion', pygame.mixer.Sound('Sprites/Explosions/Explosion2.wav'), 128)
         enemyShip.xcor = xcor

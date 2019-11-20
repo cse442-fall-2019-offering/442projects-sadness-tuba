@@ -1,7 +1,7 @@
 # importation for pygame, MainMenuView and View and Sprite class
 import pygame
 import View.MainMenuView as main
-import View.GameplayView as gameplay
+import View.PlayerControlView as controls
 from View.ParentView import View, Sprite
 
 # Ship select view controls ship select menu
@@ -48,7 +48,7 @@ class ShipSelectView(View):
         if self.playButton.xAxis + 146 > mouse[0] > self.playButton.xAxis and self.playButton.yAxis + 44 > mouse[
             1] > self.playButton.yAxis:
             self.transition()
-            return gameplay.GameplayView()
+            return controls.PlayerControlView()
         else:
             return self
 
@@ -59,7 +59,7 @@ class ShipSelectView(View):
             return main.MainMenuView()
         if key[pygame.K_KP_ENTER] or key[pygame.K_RETURN]:
             self.transition()
-            return gameplay.GameplayView()
+            return controls.PlayerControlView()
         else:
             return self
 
