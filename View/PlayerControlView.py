@@ -32,6 +32,9 @@ class PlayerControlView(View):
         else:
             return self
 
+    def click_event(self, mouse):
+        return self
+
 
 
 
