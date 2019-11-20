@@ -5,6 +5,7 @@ import pygame
 import math
 from View.ParentView import View
 
+globalPlayerScore = 0
 
 # Class for defining the gameplay portion
 class GameplayView(View):
@@ -172,6 +173,7 @@ class GameplayView(View):
                 self.enemyBulletArray.remove(bullet)
 
     def enemy_hit(self):
+        global globalPlayerScore
         for enemy in self.enemyList:
             for bullet in self.bulletArray:
                 for hitbox in enemy.hitboxArray:
@@ -181,6 +183,7 @@ class GameplayView(View):
                             if enemy.health <= 0:
                                 self.explosionArray.add(Explosion(enemy.xcor, enemy.ycor, enemy.width, enemy.height, enemy.explosion, 0, enemy.explosionSound))
                                 self.player.score += enemy.score
+                                globalPlayerScore = self.player.score
                                 self.enemyList.remove(enemy)
                             else:
                                 self.explosionArray.add(
@@ -256,7 +259,7 @@ class Player(GameSprite):
         self.playerMaxSpeed = 7
         self.bulletSpeed = 10
         self.damage = 1
-        self.maxHealth = 3
+        self.maxHealth = 3 
         self.health = 3
         self.score = 0
         self.dead = False
