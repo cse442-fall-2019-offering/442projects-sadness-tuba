@@ -48,7 +48,7 @@ class GameplayView(View):
             self.spawn_enemies(i, dt)
         self.move_enemies(dt)
         self.move_bullets(dt)
-        self.enemy_hit()
+        self.check_enemy_hit()
         self.check_player_hit(dt)
         self.player.update(self.screen, dt)
         for j in self.explosionArray:
@@ -108,7 +108,7 @@ class GameplayView(View):
         while count < self.player.health * spacing:
             screen.blit(self.heart[0], (10 + count, 38))
             count += spacing
-        while player_health != self.player.maxHealth:
+        while player_health < self.player.maxHealth:
             player_health += 1
             screen.blit(self.heart[1], (10 + count, 38))
             count += spacing
@@ -271,13 +271,13 @@ class GameplayView(View):
                 return True
         return False
 
-    def enemy_hit(self):
-        for enemy in self.enemyList:
-            for bullet in self.bulletArray:
+    def check_enemy_hit(self):
+        for bullet in self.bulletArray:
+            for enemy in self.enemyList:
                 for hitbox in enemy.hitboxArray:
                     if self.check_hit(bullet.hurtbox, hitbox):
                         enemy.health = enemy.health - bullet.damage
-                        self.player.energy += 100
+                        self.player.energy += self.player.energyGain
                         if bullet.explode:
                             self.explosionArray.add(
                                 Explosion(bullet.xcor - ((bullet.explosionSize / 2) - (bullet.width / 2)),
@@ -479,8 +479,8 @@ class Bullet(GameSprite):
             self.ycor -= self.player.bulletSpeed
             self.hurtbox[1] -= self.player.bulletSpeed
         elif self.name == 'ion_blast':
-            self.ycor -= 4
-            self.hurtbox[1] -= 4
+            self.ycor -= 5
+            self.hurtbox[1] -= 5
 
 
 class EnemyBullet(GameSprite):
