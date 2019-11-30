@@ -33,7 +33,8 @@ class PlayerControlView(View):
             return self
 
     def click_event(self, mouse):
-        return self
+        self.transition()
+        return gameplay.GameplayView()
 
 
 

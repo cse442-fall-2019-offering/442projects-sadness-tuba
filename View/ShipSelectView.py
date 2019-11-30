@@ -98,9 +98,19 @@ class ShipSelectView(View):
         if key[pygame.K_ESCAPE]:
             self.transition()
             return main.MainMenuView()
-        if key[pygame.K_KP_ENTER] or key[pygame.K_RETURN]:
+        elif key[pygame.K_KP_ENTER] or key[pygame.K_RETURN]:
             self.transition()
             return controls.PlayerControlView()
+        elif key[pygame.K_LEFT] or key[pygame.K_a]:
+            self.index -= 1
+            if self.index < 0:
+                self.index = len(self.ships) - 1
+            return self
+        if key[pygame.K_RIGHT] or key[pygame.K_d]:
+            self.index += 1
+            if self.index >= len(self.ships):
+                self.index = 0
+            return self
         else:
             return self
 

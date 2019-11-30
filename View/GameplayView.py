@@ -400,7 +400,7 @@ class Player(GameSprite):
         self.health = 3
         self.score = 0
         self.energyGain = 4
-        self.energy = 100
+        self.energy = 0
         self.ability = ability
         self.dead = False
         self.deathSoundPlayed = False
