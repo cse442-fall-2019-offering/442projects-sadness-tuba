@@ -10,20 +10,6 @@ from View.ParentView import View, Sprite
 class GameOverView(View):
     # GameOverView, child class of ParentView
     def __init__(self):
-
-        # checks if score file is in directory
-        lst = [0, 0, 0, 0, 0]
-        if not os.path.exists("score.txt"):
-            with open("score.txt", "w+") as f:
-                for i in range(5):
-                    f.write(str(0) + '\n')
-        else:
-            with open("score.txt", "r") as f:
-                lines = f.readlines()
-                for i, line in enumerate(lines):
-                    lst[i] = int(line.rstrip('\n'))
-
-
         super(GameOverView, self).__init__()
         self.name = "GameOver"
         self.allFonts = pygame.font.get_fonts()
@@ -36,25 +22,38 @@ class GameOverView(View):
         self.gameOverLabel = Label("game_over", pygame.image.load('Sprites/Options/Game_Over.png'), 146, 88) # [2] 146
         self.retry = TextOption('Retry', 305, 550) # [2] 400
         self.mainMenu = TextOption('Main Menu', 275, 600) # [2] 450
+        self.score1 = TextOption('1. ' + str(00000),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,270)
+        self.score2 = TextOption('2. ' + str(00000),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,320)
+        self.score3 = TextOption('3. ' + str(00000),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,370)
+        self.score4 = TextOption('4. ' + str(00000),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,420)
+        self.score5 = TextOption('5. ' + str(00000),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,470)
 
+        # checks if score file is in directory
+        self.lst = [0, 0, 0, 0, 0]
+
+    def updateScores(self, latestScore):
+        if not os.path.exists("score.txt"):
+            with open("score.txt", "w+") as f:
+                for i in range(5):
+                    f.write(str(0) + '\n')
+        else:
+            with open("score.txt", "r") as f:
+                lines = f.readlines()
+                for i, line in enumerate(lines):
+                    self.lst[i] = int(line.rstrip('\n'))
         # updates scoreboard
         with open("score.txt", "w+") as f:
-            if gameplay.globalPlayerScore > min(lst):
-                lst.append(gameplay.globalPlayerScore)
-                lst.sort(reverse=True)
-                lst.pop()
-                for i in range(5):
-                    f.write(str(lst[i]) + '\n')
+            self.lst.append(latestScore)
+            self.lst.sort(reverse=True)
+            self.lst.pop()
+            for i in range(5):
+                f.write(str(self.lst[i]) + '\n')
 
-        self.score1 = TextOption('1. ' + str(lst[0]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,270)
-        self.score2 = TextOption('2. ' + str(lst[1]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,320)
-        self.score3 = TextOption('3. ' + str(lst[2]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,370)
-        self.score4 = TextOption('4. ' + str(lst[3]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,420)
-        self.score5 = TextOption('5. ' + str(lst[4]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,470)
-        self.gameOver = False
-
-    # def sortScore(self):
-    #     menu.scoreFile.write(str(gameplay.globalPlayerScore))
+        self.score1 = TextOption('1. ' + str(self.lst[0]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,270)
+        self.score2 = TextOption('2. ' + str(self.lst[1]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,320)
+        self.score3 = TextOption('3. ' + str(self.lst[2]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,370)
+        self.score4 = TextOption('4. ' + str(self.lst[3]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,420)
+        self.score5 = TextOption('5. ' + str(self.lst[4]).zfill(6),((self.windowWidth-self.gameOverLabel.xAxis)/2)-10,470)
 
     def make_stars(self):
         # creates stars for the main menu background. Returns pygame.sprite.Group() of stars
