@@ -9,10 +9,11 @@ from View.ParentView import View, Sprite
 
 class PlayerControlView(View):
     # ShipSelectView, child class of ParentView
-    def __init__(self):
+    def __init__(self, selected_ship):
         super(PlayerControlView, self).__init__()
         self.name = "PlayerControls"
         self.bg = pygame.image.load('Sprites/Menu/Player_Controls_Page.png')
+        self.selectedShip = selected_ship
 
     def draw(self, mouse, dt):
         # repeatedly draws the screen, must provide: (mouse position, milliseconds since last frame)
@@ -28,13 +29,13 @@ class PlayerControlView(View):
             return shipselect.ShipSelectView()
         if key[pygame.K_KP_ENTER] or key[pygame.K_RETURN]:
             self.transition()
-            return gameplay.GameplayView()
+            return gameplay.GameplayView(self.selectedShip)
         else:
             return self
 
     def click_event(self, mouse):
         self.transition()
-        return gameplay.GameplayView()
+        return gameplay.GameplayView(self.selectedShip)
 
 
 

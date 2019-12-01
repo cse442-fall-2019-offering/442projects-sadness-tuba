@@ -32,8 +32,8 @@ def main():
                 cv = View.QuitView.QuitView()
             if cv.name != "Gameplay":
                 if event.type == pygame.MOUSEBUTTONUP:
-                    print(mouse)
                     cv = cv.click_event(mouse)
+                    print(mouse)
                 if event.type == pygame.KEYDOWN:
                     key = pygame.key.get_pressed()
                     cv = cv.key_event(key)

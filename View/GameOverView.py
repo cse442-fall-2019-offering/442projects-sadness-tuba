@@ -3,6 +3,7 @@ import pygame
 import os
 import View.MainMenuView as main
 import View.GameplayView as gameplay
+import View.ShipSelectView as shipselect
 import Controller.MenuController as menu
 from View.ParentView import View, Sprite
 
@@ -105,7 +106,7 @@ class GameOverView(View):
         # returns MainMenuView if an button is clicked. Otherwise it returns self. Must provide: (mouse position)
         if 435 > mouse[0] > 275 and self.retry.yAxis + 30 > mouse[1] > self.retry.yAxis:
             self.transition()
-            return gameplay.GameplayView()
+            return shipselect.ShipSelectView()
         elif 435 > mouse[0] > 275 and self.mainMenu.yAxis + 30 > mouse[1] > self.mainMenu.yAxis:
             self.transition()
             return main.MainMenuView()
