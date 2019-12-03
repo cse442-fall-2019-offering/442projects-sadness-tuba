@@ -18,6 +18,9 @@ class GameplayView(View):
         if selected_ship == 'Infinity':
             self.player = Player(310, 600, 64, 64, 'Sprites/PlayerShips/Infinity/Infinity_Flying', 0,
                                  'Infinity')
+        elif selected_ship == 'Imperier':
+            self.player = Player(310, 600, 64, 64, 'Sprites/PlayerShips/Imperier/Flying', 0,
+                                 'Imperier')
         elif selected_ship == 'Scatter':
             self.player = Player(310, 600, 64, 64, 'Sprites/PlayerShips/Scatter/Flying', 0,
                                  'Scatter')
@@ -33,8 +36,8 @@ class GameplayView(View):
         self.sectionArray = [self.section1, self.section2, self.section3]
         # Enemy Formation ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1',
         # 'scatter_v1', 'scatter_^1', 'scatimp_^1', 'KZBomber_^1', 'KZBomber_v1']
-        self.formationTypes = ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1',
-         'scatter_v1', 'scatter_^1', 'scatimp_^1', 'KZBomber_^1', 'KZBomber_v1']
+        self.formationTypes = ['v1', '^1', 'diagonal1', 'diagonal2']
+        self.enemies = ['Impaler', 'Imperier', 'Scatter', 'KZBomber']
         self.enemyList = pygame.sprite.Group()
         # Display
         self.heart = View.load_images('Sprites/Player_Info/Heart')
@@ -59,9 +62,9 @@ class GameplayView(View):
         for j in self.explosionArray:
             j.update(self.screen, dt)
         self.display_player_info(self.screen)
-        # Player Hitbox
+        # Debug Player Hitbox
         # for hitbox in self.player.hitboxArray:
-         #   pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
+        #    pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
         pygame.display.update()
 
     def key_event(self, key):
@@ -128,7 +131,7 @@ class GameplayView(View):
     def shoot_bullet(self):
         # player shoots bullet. shootType can be customized to change the starting position of the bullet and how many bullets shot
         if self.player.shootType == 'single_middle':
-            bullet = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5), self.player.ycor,
+            bullet = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
                             self.player.currentBullet[1], self.player.currentBullet[2], self.player.currentBullet[3], 0,
                             self.player, self.player.currentBullet, 0)
             self.bulletArray.add(bullet)
@@ -158,6 +161,12 @@ class GameplayView(View):
         if self.player.ability == 'Ion_Blast':
             bullet = Bullet(self.player.xcor, self.player.ycor, self.player.ionBlast[1], self.player.ionBlast[2],
                             self.player.ionBlast[3], 0, self.player, self.player.ionBlast, 0)
+            self.bulletArray.add(bullet)
+            bullet.sound.play()
+            self.bulletTimer = .4
+        elif self.player.ability == 'Mini_KZ':
+            bullet = Bullet(self.player.xcor, self.player.ycor, self.player.Mini_KZ[1], self.player.Mini_KZ[2],
+                            self.player.Mini_KZ[3], 0, self.player, self.player.Mini_KZ, 0)
             self.bulletArray.add(bullet)
             bullet.sound.play()
             self.bulletTimer = .4
@@ -215,44 +224,21 @@ class GameplayView(View):
         if section.CD <= 0:
             section.CD = random.uniform(section.earliestCD, section.latestCD)
             chosenFormation = random.choice(self.formationTypes)
-            if chosenFormation == 'imp_v1':
-                self.enemyList.add(self.create_enemy('Impaler', section.midPoint - 16, section.yaxis))
-                self.enemyList.add(self.create_enemy('Imperier', section.startPoint, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('Imperier', section.endPoint, section.yaxis - 64))
-            elif chosenFormation == 'impaler_diagonal1':
-                self.enemyList.add(self.create_enemy('Impaler', section.startPoint, section.yaxis))
-                self.enemyList.add(self.create_enemy('Impaler', section.endPoint - 32, section.yaxis - 64))
-            elif chosenFormation == 'impaler_diagonal2':
-                self.enemyList.add(self.create_enemy('Impaler', section.startPoint, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('Impaler', section.endPoint - 32, section.yaxis))
-            elif chosenFormation == 'imperier_v1':
-                self.enemyList.add(self.create_enemy('Imperier', section.midPoint, section.yaxis))
-                self.enemyList.add(self.create_enemy('Imperier', section.startPoint + 16, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('Imperier', section.endPoint - 16, section.yaxis - 64))
-            elif chosenFormation == 'imperier_^1':
-                self.enemyList.add(self.create_enemy('Imperier', section.midPoint, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('Imperier', section.startPoint + 16, section.yaxis))
-                self.enemyList.add(self.create_enemy('Imperier', section.endPoint - 16, section.yaxis))
-            elif chosenFormation == 'scatter_v1':
-                self.enemyList.add(self.create_enemy('Scatter', section.midPoint, section.yaxis))
-                self.enemyList.add(self.create_enemy('Imperier', section.startPoint + 16, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('Imperier', section.endPoint - 16, section.yaxis - 64))
-            elif chosenFormation == 'scatter_^1':
-                self.enemyList.add(self.create_enemy('Imperier', section.midPoint, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('Scatter', section.startPoint + 16, section.yaxis))
-                self.enemyList.add(self.create_enemy('Scatter', section.endPoint - 16, section.yaxis))
-            elif chosenFormation == 'scatimp_^1':
-                self.enemyList.add(self.create_enemy('Impaler', section.midPoint - 16, section.yaxis))
-                self.enemyList.add(self.create_enemy('Scatter', section.startPoint, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('Scatter', section.endPoint, section.yaxis - 64))
-            elif chosenFormation == 'KZBomber_^1':
-                self.enemyList.add(self.create_enemy('KZBomber', section.midPoint - 16, section.yaxis))
-                self.enemyList.add(self.create_enemy('KZBomber', section.startPoint, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('KZBomber', section.endPoint, section.yaxis - 64))
-            elif chosenFormation == 'KZBomber_v1':
-                self.enemyList.add(self.create_enemy('KZBomber', section.midPoint, section.yaxis))
-                self.enemyList.add(self.create_enemy('KZBomber', section.startPoint + 16, section.yaxis - 64))
-                self.enemyList.add(self.create_enemy('KZBomber', section.endPoint - 16, section.yaxis - 64))
+            if chosenFormation == 'v1':
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.midPoint - 16, section.yaxis))
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.startPoint, section.yaxis - 64))
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.endPoint, section.yaxis - 64))
+            elif chosenFormation == 'diagonal1':
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.startPoint, section.yaxis))
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.endPoint - 32, section.yaxis - 64))
+            elif chosenFormation == 'diagonal2':
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.startPoint, section.yaxis - 64))
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.endPoint - 32, section.yaxis))
+            elif chosenFormation == '^1':
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.midPoint, section.yaxis - 64))
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.startPoint + 16, section.yaxis))
+                self.enemyList.add(self.create_enemy(random.choice(self.enemies), section.endPoint - 16, section.yaxis))
+
 
     def move_enemies(self, dt):
         # moves all enemies on the screen and removes them when they leave the screen
@@ -290,7 +276,7 @@ class GameplayView(View):
                     bullet3.sound.play()
 
             i.update(self.screen, dt)
-            # Debug hitbox. Shows enemy hitboxes in red rectangle.
+            # Debug Enemy. Shows enemy hitboxes in red rectangle.
             # for hitbox in i.hitboxArray:
             #    pygame.draw.rect(self.screen, (255, 0, 0), hitbox, 3)
             # for hurtbox in i.hurtboxArray:
@@ -303,14 +289,14 @@ class GameplayView(View):
         for bullet in self.bulletArray:
             bullet.move()
             bullet.update(self.screen, dt)
-            # shows player bullet hitbox
+            # Debug player bullet
             # pygame.draw.rect(self.screen, (0, 0, 255), bullet.hurtbox, 1)
             if bullet.ycor < -20 or bullet.ycor > 770:
                 self.bulletArray.remove(bullet)
         for bullet in self.enemyBulletArray:
             bullet.move()
             bullet.update(self.screen, dt)
-            # shows enemy bullet hitbox
+            # Debug enemy bullet
             # pygame.draw.rect(self.screen, (0, 0, 255), bullet.hurtbox, 1)
             if bullet.ycor < -20 or bullet.ycor > 770:
                 self.enemyBulletArray.remove(bullet)
@@ -324,6 +310,8 @@ class GameplayView(View):
     def check_enemy_dest(self, enemy, damage):
         enemy.health = enemy.health - damage
         self.player.energy += self.player.energyGain
+        if self.player.energy > 100:
+            self.player.energy = 100
         if enemy.health <= 0:
             if enemy.explosionSize != enemy.width:
                 if enemy.category == 'explode':
@@ -361,14 +349,12 @@ class GameplayView(View):
                         else:
                             if not bullet.explode and not destoryed:
                                 self.explosionArray.add(
-                                    Explosion(bullet.xcor, bullet.ycor, bullet.explosionSize, bullet.explosionSize,
+                                    Explosion(bullet.xcor + bullet.width/2, bullet.ycor, bullet.explosionSize, bullet.explosionSize,
                                               bullet.explosionImages, 0, bullet.hitSound, 0, True))
-                        if self.player.energy > 100:
-                            self.player.energy = 100
                         self.bulletArray.remove(bullet)
                         break
         for explosion in self.explosionArray:
-            if explosion.damage > 0 and explosion.friendly is True:
+            if explosion.damage > 0 and explosion.player is True:
                 for enemy in self.enemyList:
                     for hurtbox in explosion.hurtboxArray:
                         for hitbox in enemy.hitboxArray:
@@ -401,7 +387,7 @@ class GameplayView(View):
                         for hurtbox in explosion.hurtboxArray:
                             # Shows explosion hurtbox
                             # pygame.draw.rect(self.screen, (0, 0, 255), hurtbox, 3)
-                            if self.check_hit(hurtbox, hitbox) and not explosion.friendly:
+                            if self.check_hit(hurtbox, hitbox):
                                 damaged = self.player_hit(damaged)
                                 break
         elif self.player.health <= 0:
@@ -458,7 +444,7 @@ class Player(GameSprite):
 
         self.score = 0
         self.energyGain = 4
-        self.energy = 0
+        self.energy = 100
         self.dead = False
         self.deathSoundPlayed = False
         self.iFrames = 1.5
@@ -476,9 +462,12 @@ class Player(GameSprite):
                          pygame.mixer.Sound('Sprites/Projectiles/Ion_Blast.wav'),
                          'Sprites/Explosions/176x176_Blue_Explosion', 176,
                          pygame.mixer.Sound('Sprites/Explosions/Ion_Explosion.wav')]
+        self.Mini_KZ = ['mini_kz', 64, 64, 'Sprites/Projectiles/Mini_KZ',
+                         pygame.mixer.Sound('Sprites/Projectiles/Deploy_Mine.wav'),
+                         'Sprites/Explosions/176x176_Red_Explosion', 176,
+                         pygame.mixer.Sound('Sprites/Explosions/Ion_Explosion.wav')]
         self.name = name
         self.hitSound = pygame.mixer.Sound('Sprites/PlayerShips/Ship_Hit.wav')
-        self.deathSound = pygame.mixer.Sound('Sprites/Explosions/Multiple_Explosions.wav')
         self.hitboxArray = []
         if self.name == 'Infinity':
             self.shootType = 'single_middle'
@@ -488,12 +477,28 @@ class Player(GameSprite):
             self.maxHealth = 3
             self.health = self.maxHealth
             self.damage = 1
-            self.energyGain = 6
+            self.energyGain = 8
             self.ability = 'Ion_Blast'
             self.currentBullet = self.smallBasicBullet
             self.des_images = View.load_images('Sprites/PlayerShips/Infinity/Infinity_Destroyed')
+            self.deathSound = pygame.mixer.Sound('Sprites/PlayerShips/Infinity/Infinity_Destroyed.wav')
             self.hitboxArray.append([self.xcor + 25, self.ycor, 15, 50])
             self.hitboxArray.append([self.xcor + 7, self.ycor + 35, 53, 10])
+        elif self.name == 'Imperier':
+            self.shootType = 'single_middle'
+            self.fireRate = .6
+            self.playerSpeed = 6
+            self.bulletSpeed = 7
+            self.maxHealth = 2
+            self.health = self.maxHealth
+            self.damage = 1.5
+            self.energyGain = 8
+            self.ability = 'Mini_KZ'
+            self.currentBullet = self.smallRedBullet
+            self.des_images = View.load_images('Sprites/PlayerShips/Imperier/Destroyed')
+            self.deathSound = pygame.mixer.Sound('Sprites/PlayerShips/Imperier/Imperier_Destroyed.wav')
+            self.hitboxArray.append([self.xcor + 20, self.ycor + 10, 25, 50])
+            self.hitboxArray.append([self.xcor + 5, self.ycor + 18, 55, 10])
         elif self.name == 'Scatter':
             self.shootType = 'tri_scatter'
             self.fireRate = 1.2
@@ -502,10 +507,11 @@ class Player(GameSprite):
             self.maxHealth = 2
             self.health = self.maxHealth
             self.damage = 1
-            self.energyGain = 2
+            self.energyGain = 3
             self.ability = 'Scatter_Shot'
             self.currentBullet = self.smallRedBullet
             self.des_images = View.load_images('Sprites/PlayerShips/Scatter/Destroyed')
+            self.deathSound = pygame.mixer.Sound('Sprites/PlayerShips/Scatter/Scatter_Destroyed.wav')
             self.hitboxArray.append([self.xcor + 27, self.ycor + 8, 10, 50])
             self.hitboxArray.append([self.xcor + 15, self.ycor + 20, 35, 20])
             self.hitboxArray.append([self.xcor + 4, self.ycor + 25, 60, 20])
@@ -548,6 +554,7 @@ class Bullet(GameSprite):
         self.hitSound = player_bullet[7]
         self.explosionImages = player_bullet[5]
         self.explosionSize = player_bullet[6]
+        self.speed = self.player.bulletSpeed
         self.explode = False
         self.x = x
         self.damage = self.player.damage
@@ -560,17 +567,28 @@ class Bullet(GameSprite):
             self.explode = True
             self.damage = 1
             self.hurtbox = [self.xcor + 24, self.ycor + 24, 16, 16]
+        elif self.name == 'mini_kz':
+            self.explode = True
+            self.damage = 0
+            self.hurtbox = [self.xcor + 20, self.ycor + 20, 24, 24]
+            self.decay = .15
 
     def move(self):
         # moves the bullet. can customize bullet pathing
         if self.name == 'sm_basic_bullet' or self.name == 'sm_red_bullet':
             self.xcor += self.x
-            self.ycor -= self.player.bulletSpeed
+            self.ycor -= self.speed
             self.hurtbox[0] += self.x
-            self.hurtbox[1] -= self.player.bulletSpeed
+            self.hurtbox[1] -= self.speed
         elif self.name == 'ion_blast':
             self.ycor -= 6
             self.hurtbox[1] -= 6
+        elif self.name == 'mini_kz':
+            if self.speed > 0:
+                self.speed -= self.decay
+                self.ycor -= self.speed
+                self.hurtbox[1] -= self.speed
+
 
 
 class EnemyBullet(GameSprite):
@@ -600,13 +618,13 @@ class EnemyBullet(GameSprite):
 
 
 class Explosion(GameSprite):
-    def __init__(self, xcor, ycor, width, height, images, starting_frame, sound, damage, friendly):
+    def __init__(self, xcor, ycor, width, height, images, starting_frame, sound, damage, player):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
         self.sound = sound
         self.soundPlayed = False
         self.hurtboxArray = []
         self.damage = damage
-        self.friendly = friendly
+        self.player = player
         self.idArray = []
 
         if damage > 0:
@@ -627,6 +645,8 @@ class Explosion(GameSprite):
         self.currentTime += dt
         if self.currentTime >= self.animationTime:
             self.currentTime = 0
+            if self.damage > 0 and self.index > 0:
+                self.hurtboxArray = []
             self.index = (self.index + 1) % len(self.images)
             if self.index == len(self.images) - 1:
                 self.kill()
@@ -651,10 +671,10 @@ class Enemy(GameSprite):
         self.hitboxArray = []
         self.abilitycd = abilitycd
         self.cd = self.abilitycd
-        self.bool = bool(random.getrandbits(1))
         self.category = 'normal'
         if self.name == 'KZBomber':
             self.category = 'explode'
+            self.bool = bool(random.getrandbits(1))
 
         if self.name == 'Impaler':
             self.hitboxArray.append([self.xcor + 10, self.ycor + 20, 75, 30])

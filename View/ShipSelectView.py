@@ -24,8 +24,7 @@ class ShipSelectView(View):
         self.rightArrow = ButtonOption("right", pygame.image.load('Sprites/Options/Right_Arrow.png'),
                                        pygame.image.load('Sprites/Options/Right_Arrow_Highlighted.png'), 218, 425)
         self.index = 0
-        #  Ships('Imperier', Sprite(318, 350, 64, View.load_images('Sprites/PlayerShips/Imperier/Flying'), 0)),
-        self.ships = [Ships('Infinity', Sprite(144, 425, 64, self.BasicShipFrames, 0)), Ships('Scatter', Sprite(144, 425, 64, View.load_images('Sprites/PlayerShips/Scatter/Flying'), 0))]
+        self.ships = [Ships('Infinity', Sprite(144, 425, 64, self.BasicShipFrames, 0)), Ships('Imperier', Sprite(144, 425, 64, View.load_images('Sprites/PlayerShips/Imperier/Flying'), 0)), Ships('Scatter', Sprite(144, 425, 64, View.load_images('Sprites/PlayerShips/Scatter/Flying'), 0))]
 
     def draw(self, mouse, dt):
         # repeatedly draws the screen, must provide: (mouse position, milliseconds since last frame)
@@ -165,7 +164,7 @@ class ShipSelectView(View):
         self.screen.blit(text_shot_type, (500, 325))
         self.screen.blit(sm_font.render(self.ships[self.index].shotType, False, (255, 255, 255)), (496, 430))
         self.screen.blit(text_ability, (516, 475))
-        self.screen.blit(sm_font.render(self.ships[self.index].ability, False, (255, 255, 255)), (496, 570))
+        self.screen.blit(sm_font.render(self.ships[self.index].ability, False, (255, 255, 255)), (486, 570))
         self.screen.blit(text, text_rect)
 
 
@@ -190,10 +189,20 @@ class Ships(object):
             self.fireRate = 3
             self.speed = 4
             self.shotType = 'Single Shot'
-            self.shotImage = Sprite(562, 375, 64, View.load_images('Sprites/Projectiles/Small_Basic_Bullet'), 0)
-            self.ability = ' Ion Blast'
+            self.shotImage = Sprite(550, 365, 64, View.load_images('Sprites/Projectiles/Small_Basic_Bullet'), 0)
+            self.ability = '  Ion Blast'
             self.abilityImages = Sprite(534, 494, 64, View.load_images('Sprites/Projectiles/Blue_Ion_Blast'), 0)
-        if self.name == 'Scatter':
+        elif self.name == 'Imperier':
+            self.health = 2
+            self.damage = 3
+            self.fireRate = 2
+            self.speed = 2
+            self.shotType = 'Single Shot'
+            self.shotImage = Sprite(550, 365, 64, View.load_images('Sprites/Projectiles/Small_Red_Bullet'), 0)
+            self.ability = 'Mini KZ Mine'
+            self.abilityImages = Sprite(534, 500, 64, View.load_images('Sprites/Projectiles/Mini_KZ'),
+                                        0)
+        elif self.name == 'Scatter':
             self.health = 2
             self.damage = 4
             self.fireRate = 1
