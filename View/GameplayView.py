@@ -444,7 +444,7 @@ class Player(GameSprite):
 
         self.score = 0
         self.energyGain = 4
-        self.energy = 100
+        self.energy = 0
         self.dead = False
         self.deathSoundPlayed = False
         self.iFrames = 1.5
