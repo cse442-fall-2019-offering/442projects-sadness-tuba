@@ -7,6 +7,7 @@ class View(object):
     #  parent class of view
     def __init__(self):
         self.running = True
+        self.gameOver = False
         # Pygame window width
         self.windowWidth = 700
         # Pygame window height
@@ -17,13 +18,13 @@ class View(object):
         # Initializes pygame screen
         self.screen = pygame.display.set_mode((self.windowWidth, self.windowHeight))
         # Frames for playership
-        self.BasicShipFrames = View.load_images('PlayerShips/Infinity')
+        self.BasicShipFrames = View.load_images('Sprites/PlayerShips/Infinity/Infinity_Flying')
         # Frames for stars
-        self.star1 = View.load_images('Background/Animated_Star1')
-        self.star2 = View.load_images('Background/Animated_Star2')
-        self.star3 = View.load_images('Background/Animated_Star3')
+        self.star1 = View.load_images('Sprites/Background/Animated_Star1')
+        self.star2 = View.load_images('Sprites/Background/Animated_Star2')
+        self.star3 = View.load_images('Sprites/Background/Animated_Star3')
         pygame.display.set_caption('BEYOND INFINITY')
-        pygame.display.set_icon(pygame.image.load('PlayerShips/Infinity/BasicShipFlying0.png'))
+        pygame.display.set_icon(pygame.image.load('Sprites/PlayerShips/Infinity/Infinity_Flying/BasicShipFlying0.png'))
 
     def is_running(self):
         # returns running which either continues or stops the game
@@ -34,13 +35,13 @@ class View(object):
         # loads images and returns the images in an array
         images = []
         for file_name in os.listdir(path):
-            image = pygame.image.load(path + os.sep + file_name).convert()
+            image = pygame.image.load(path + os.sep + file_name).convert_alpha()
             images.append(image)
         return images
 
     def transition(self):
         # plays select sound effect and screen fades out
-        pygame.mixer.music.load('Menu/Menu_Select.mp3')
+        pygame.mixer.music.load('Sprites/Menu/Menu_Select.mp3')
         pygame.mixer.music.play()
         fade = pygame.Surface((self.windowWidth, self.windowHeight))
         fade.fill((0, 0, 0))
