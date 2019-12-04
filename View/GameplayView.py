@@ -443,7 +443,6 @@ class Player(GameSprite):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
 
         self.score = 0
-        self.energyGain = 4
         self.energy = 0
         self.dead = False
         self.deathSoundPlayed = False
@@ -492,7 +491,7 @@ class Player(GameSprite):
             self.maxHealth = 2
             self.health = self.maxHealth
             self.damage = 1.5
-            self.energyGain = 8
+            self.energyGain = 12
             self.ability = 'Mini_KZ'
             self.currentBullet = self.smallRedBullet
             self.des_images = View.load_images('Sprites/PlayerShips/Imperier/Destroyed')
