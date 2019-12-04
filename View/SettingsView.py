@@ -10,11 +10,11 @@ class SettingsView(View):
         super(SettingsView, self).__init__()
         self.name = "Settings"
         # background image
-        self.bg = pygame.image.load('Sprites/Menu/Settings_Page.png')
+        self.bg = pygame.image.load('Menu/Settings_Page.png')
         # creates all the sprite stars and puts it in Sprite.Group
         self.stars = self.make_stars()
         # 146x44
-        self.backButton = ButtonOption("back", pygame.image.load('Sprites/Options/Back.png'), pygame.image.load('Sprites/Options/Back_Highlighted.png'), 25, 675)
+        self.backButton = ButtonOption("back", pygame.image.load('Options/Back.png'), pygame.image.load('Options/Back_Highlighted.png'), 25, 675)
 
     def make_stars(self):
         # creates stars for the main menu background. Returns pygame.sprite.Group() of stars
