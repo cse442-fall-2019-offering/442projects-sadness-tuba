@@ -1,10 +1,11 @@
 # importation for pygame, os and all the views
 import pygame
 import os
-import View.MainMenuView, View.QuitView, View.SettingsView, View.GameplayView, View.ParentView
+import View.MainMenuView, View.QuitView, View.SettingsView, View.GameplayView, View.ParentView, View.GameOverView
 
 
 def main():
+    # Used to change and fix directory issues
     os.chdir("..")
     pygame.mixer.pre_init(44100, -16, 1, 512)
     # need to initialize pygame before using
@@ -17,6 +18,8 @@ def main():
     clock = pygame.time.Clock()
     # plays menu music
     cv.play_music('Sprites/Menu/Menu_Track.wav')
+    # temp variable for score
+    score = 0
     # while the current view is running, loop
     while cv.is_running():
         dt = clock.tick(60) / 1000
@@ -30,14 +33,18 @@ def main():
                 cv = View.QuitView.QuitView()
             if cv.name != "Gameplay":
                 if event.type == pygame.MOUSEBUTTONUP:
-                    print(mouse)
                     cv = cv.click_event(mouse)
+                    print(mouse)
                 if event.type == pygame.KEYDOWN:
                     key = pygame.key.get_pressed()
                     cv = cv.key_event(key)
         if cv.name == "Gameplay":
             keys = pygame.key.get_pressed()  # checking pressed keys
             cv.key_event(keys)
+            if cv.game_over():
+                score = cv.get_score()
+                cv = View.GameOverView.GameOverView()
+                cv.updateScores(score)
 
 
 if __name__ == "__main__":
