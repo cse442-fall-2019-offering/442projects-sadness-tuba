@@ -5,6 +5,7 @@ import View.MainMenuView, View.QuitView, View.SettingsView, View.GameplayView, V
 
 
 def main():
+    # Used to change and fix directory issues
     os.chdir("..")
     pygame.mixer.pre_init(44100, -16, 1, 512)
     # need to initialize pygame before using
