@@ -22,7 +22,7 @@ class MainMenuView(View):
         # tuple of option classes
         self.optionTuple = self.make_menu_options()
         # sprite of the ship
-        self.ship = Sprite(100, 375, 64, self.BasicShipFrames, 0)
+        self.ship = Sprite(100, 425, 64, self.BasicShipFrames, 0)
         # variable of selected option
         self.selectedOption = self.optionTuple[0]
 
@@ -34,14 +34,14 @@ class MainMenuView(View):
 
         # 346x44
         startOption = MenuOption("start", pygame.image.load('Sprites/Options/Start_Game.png'),
-                                 pygame.image.load('Sprites/Options/Start_Game_Highlighted.png'), 346, 375)
+                                 pygame.image.load('Sprites/Options/Start_Game_Highlighted.png'), 346, 425)
         # 274x44
-        settingsOption = MenuOption("settings", pygame.image.load('Sprites/Options/Settings.png'),
-                                    pygame.image.load('Sprites/Options/Settings_Highlighted.png'), 274, 450)
+        # settingsOption = MenuOption("settings", pygame.image.load('Sprites/Options/Settings.png'),
+        #                           pygame.image.load('Sprites/Options/Settings_Highlighted.png'), 274, 450)
         # 126x44
         quitOption = MenuOption("quit", pygame.image.load('Sprites/Options/Quit.png'),
                                 pygame.image.load('Sprites/Options/Quit_Highlighted.png'), 126, 525)
-        option_tuple = (startOption, settingsOption, quitOption)
+        option_tuple = (startOption, quitOption)
         return option_tuple
 
     def make_stars(self):
