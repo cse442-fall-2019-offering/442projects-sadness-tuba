@@ -32,7 +32,7 @@ class GameplayView(View):
         # Sections
         self.section1 = Section(1, 0, 180, -96, 6, 9, 1)
         self.section2 = Section(2, 244, 392, -96, 6, 9, 5)
-        self.section3 = Section(3, 456, 636, -96, 6, 9, 1)
+        self.section3 = Section(3, 456, 604, -96, 6, 9, 1)
         self.sectionArray = [self.section1, self.section2, self.section3]
         # Enemy Formation ['imp_v1', 'impaler_diagonal1', 'impaler_diagonal2', 'imperier_v1', 'imperier_^1',
         # 'scatter_v1', 'scatter_^1', 'scatimp_^1', 'KZBomber_^1', 'KZBomber_v1']
@@ -92,11 +92,11 @@ class GameplayView(View):
             if key[pygame.K_SPACE]:
                 if self.bulletTimer <= 0:
                     self.bulletTimer = self.player.fireRate
-                    self.shoot_bullet()
+                    self.player.shoot_bullet(self.bulletArray)
             if key[pygame.K_e]:
                 if self.player.energy == 100:
                     self.player.energy = 0
-                    self.use_ability()
+                    self.bulletTimer = self.player.use_ability(self.bulletArray)
 
     def game_over(self):
         return self.gameOver
@@ -127,75 +127,6 @@ class GameplayView(View):
             self.screen.blit(energy_text, (50, 80))
         else:
             self.screen.blit(energy_text, (45, 80))
-
-    def shoot_bullet(self):
-        # player shoots bullet. shootType can be customized to change the starting position of the bullet and how many bullets shot
-        if self.player.shootType == 'single_middle':
-            bullet = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
-                            self.player.currentBullet[1], self.player.currentBullet[2], self.player.currentBullet[3], 0,
-                            self.player, self.player.currentBullet, 0)
-            self.bulletArray.add(bullet)
-            bullet.sound.play()
-        elif self.player.shootType == 'tri_scatter':
-            bullet1 = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
-                             self.player.currentBullet[1], self.player.currentBullet[2], self.player.currentBullet[3],
-                             0,
-                             self.player, self.player.currentBullet, .5)
-            bullet2 = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
-                             self.player.currentBullet[1], self.player.currentBullet[2], self.player.currentBullet[3],
-                             0,
-                             self.player, self.player.currentBullet, -.5)
-            bullet3 = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
-                             self.player.currentBullet[1], self.player.currentBullet[2], self.player.currentBullet[3],
-                             0,
-                             self.player, self.player.currentBullet, 0)
-            self.bulletArray.add(bullet1)
-            self.bulletArray.add(bullet2)
-            self.bulletArray.add(bullet3)
-            bullet1.sound.play()
-            bullet2.sound.play()
-            bullet3.sound.play()
-
-    def use_ability(self):
-        # player shoots bullet. shootType can be customized to change the starting position of the bullet and how many bullets shot
-        if self.player.ability == 'Ion_Blast':
-            bullet = Bullet(self.player.xcor, self.player.ycor, self.player.ionBlast[1], self.player.ionBlast[2],
-                            self.player.ionBlast[3], 0, self.player, self.player.ionBlast, 0)
-            self.bulletArray.add(bullet)
-            bullet.sound.play()
-            self.bulletTimer = .4
-        elif self.player.ability == 'Mini_KZ':
-            bullet = Bullet(self.player.xcor, self.player.ycor, self.player.Mini_KZ[1], self.player.Mini_KZ[2],
-                            self.player.Mini_KZ[3], 0, self.player, self.player.Mini_KZ, 0)
-            self.bulletArray.add(bullet)
-            bullet.sound.play()
-            self.bulletTimer = .4
-        elif self.player.ability == 'Scatter_Shot':
-            middle_bullet = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
-                             self.player.currentBullet[1], self.player.currentBullet[2],
-                             self.player.currentBullet[3],
-                             0,
-                             self.player, self.player.currentBullet, 0)
-            self.bulletArray.add(middle_bullet)
-            counter = 4
-            angle = 1
-            while counter > 0:
-                bullet1 = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
-                                 self.player.currentBullet[1], self.player.currentBullet[2],
-                                 self.player.currentBullet[3],
-                                 0,
-                                 self.player, self.player.currentBullet, angle)
-                bullet2 = Bullet(self.player.xcor + (self.player.rect.width / 2 - 5) - 10, self.player.ycor - 12,
-                                 self.player.currentBullet[1], self.player.currentBullet[2],
-                                 self.player.currentBullet[3],
-                                 0,
-                                 self.player, self.player.currentBullet, -angle)
-                self.bulletArray.add(bullet1)
-                self.bulletArray.add(bullet2)
-                counter -= 1
-                angle += 1
-            pygame.mixer.Sound('Sprites/Projectiles/Multi_Red_Bullets.wav').play()
-            self.bulletTimer = .6
 
     def create_enemy(self, enemy, xcor, ycor):
         if enemy == 'Impaler':
@@ -441,13 +372,13 @@ class Player(GameSprite):
     # player class (xcor, ycor, width, height, folder containing the images, starting frame, player's shooting type)
     def __init__(self, xcor, ycor, width, height, images, starting_frame, name):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
-
+        self.name = name
         self.score = 0
         self.energy = 0
-        self.dead = False
-        self.deathSoundPlayed = False
         self.iFrames = 1.5
         self.collisionTime = 0
+        self.dead = False
+        self.deathSoundPlayed = False
         self.invincible = False
         self.smallBasicBullet = ['sm_basic_bullet', 10, 24, 'Sprites/Projectiles/Small_Basic_Bullet',
                                  pygame.mixer.Sound('Sprites/Projectiles/Basic_Bullet.wav'),
@@ -465,7 +396,6 @@ class Player(GameSprite):
                          pygame.mixer.Sound('Sprites/Projectiles/Deploy_Mine.wav'),
                          'Sprites/Explosions/176x176_Red_Explosion', 176,
                          pygame.mixer.Sound('Sprites/Explosions/Ion_Explosion.wav')]
-        self.name = name
         self.hitSound = pygame.mixer.Sound('Sprites/PlayerShips/Ship_Hit.wav')
         self.hitboxArray = []
         if self.name == 'Infinity':
@@ -514,6 +444,76 @@ class Player(GameSprite):
             self.hitboxArray.append([self.xcor + 27, self.ycor + 8, 10, 50])
             self.hitboxArray.append([self.xcor + 15, self.ycor + 20, 35, 20])
             self.hitboxArray.append([self.xcor + 4, self.ycor + 25, 60, 20])
+
+    def shoot_bullet(self, bulletArray):
+        # player shoots bullet. shootType can be customized to change the starting position of the bullet and how many bullets shot
+        if self.shootType == 'single_middle':
+            bullet = Bullet(self.xcor + (self.rect.width / 2 - 5) - 10, self.ycor - 12,
+                            self.currentBullet[1], self.currentBullet[2], self.currentBullet[3], 0,
+                            self, self.currentBullet, 0)
+            bulletArray.add(bullet)
+            bullet.sound.play()
+        elif self.shootType == 'tri_scatter':
+            bullet1 = Bullet(self.xcor + (self.rect.width / 2 - 5) - 10, self.ycor - 12,
+                             self.currentBullet[1], self.currentBullet[2], self.currentBullet[3],
+                             0,
+                             self, self.currentBullet, .5)
+            bullet2 = Bullet(self.xcor + (self.rect.width / 2 - 5) - 10, self.ycor - 12,
+                             self.currentBullet[1], self.currentBullet[2], self.currentBullet[3],
+                             0,
+                             self, self.currentBullet, -.5)
+            bullet3 = Bullet(self.xcor + (self.rect.width / 2 - 5) - 10, self.ycor - 12,
+                             self.currentBullet[1], self.currentBullet[2], self.currentBullet[3],
+                             0,
+                             self, self.currentBullet, 0)
+            bulletArray.add(bullet1)
+            bulletArray.add(bullet2)
+            bulletArray.add(bullet3)
+            bullet1.sound.play()
+            bullet2.sound.play()
+            bullet3.sound.play()
+
+    def use_ability(self, bulletArray):
+        # player shoots bullet. shootType can be customized to change the starting position of the bullet and how many bullets shot
+        if self.ability == 'Ion_Blast':
+            bullet = Bullet(self.xcor, self.ycor, self.ionBlast[1], self.ionBlast[2],
+                            self.ionBlast[3], 0, self, self.ionBlast, 0)
+            bulletArray.add(bullet)
+            bullet.sound.play()
+            bulletTimer = .4
+        elif self.ability == 'Mini_KZ':
+            bullet = Bullet(self.xcor, self.ycor, self.Mini_KZ[1], self.Mini_KZ[2],
+                            self.Mini_KZ[3], 0, self, self.Mini_KZ, 0)
+            bulletArray.add(bullet)
+            bullet.sound.play()
+            bulletTimer = .4
+        elif self.ability == 'Scatter_Shot':
+            middle_bullet = Bullet(self.xcor + (self.rect.width / 2 - 5) - 10, self.ycor - 12,
+                             self.currentBullet[1], self.currentBullet[2],
+                             self.currentBullet[3],
+                             0,
+                             self, self.currentBullet, 0)
+            bulletArray.add(middle_bullet)
+            counter = 4
+            angle = 1
+            while counter > 0:
+                bullet1 = Bullet(self.xcor + (self.rect.width / 2 - 5) - 10, self.ycor - 12,
+                                 self.currentBullet[1], self.currentBullet[2],
+                                 self.currentBullet[3],
+                                 0,
+                                 self, self.currentBullet, angle)
+                bullet2 = Bullet(self.xcor + (self.rect.width / 2 - 5) - 10, self.ycor - 12,
+                                 self.currentBullet[1], self.currentBullet[2],
+                                 self.currentBullet[3],
+                                 0,
+                                 self, self.currentBullet, -angle)
+                bulletArray.add(bullet1)
+                bulletArray.add(bullet2)
+                counter -= 1
+                angle += 1
+            pygame.mixer.Sound('Sprites/Projectiles/Multi_Red_Bullets.wav').play()
+            bulletTimer = .6
+        return bulletTimer
 
     def update_time_dependent(self, screen, dt):
         self.currentTime += dt
