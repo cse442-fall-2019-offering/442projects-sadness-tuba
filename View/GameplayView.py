@@ -441,13 +441,13 @@ class Player(GameSprite):
     # player class (xcor, ycor, width, height, folder containing the images, starting frame, player's shooting type)
     def __init__(self, xcor, ycor, width, height, images, starting_frame, name):
         super().__init__(xcor, ycor, width, height, images, starting_frame)
-
+        self.name = name
         self.score = 0
         self.energy = 0
-        self.dead = False
-        self.deathSoundPlayed = False
         self.iFrames = 1.5
         self.collisionTime = 0
+        self.dead = False
+        self.deathSoundPlayed = False
         self.invincible = False
         self.smallBasicBullet = ['sm_basic_bullet', 10, 24, 'Sprites/Projectiles/Small_Basic_Bullet',
                                  pygame.mixer.Sound('Sprites/Projectiles/Basic_Bullet.wav'),
@@ -465,7 +465,6 @@ class Player(GameSprite):
                          pygame.mixer.Sound('Sprites/Projectiles/Deploy_Mine.wav'),
                          'Sprites/Explosions/176x176_Red_Explosion', 176,
                          pygame.mixer.Sound('Sprites/Explosions/Ion_Explosion.wav')]
-        self.name = name
         self.hitSound = pygame.mixer.Sound('Sprites/PlayerShips/Ship_Hit.wav')
         self.hitboxArray = []
         if self.name == 'Infinity':
